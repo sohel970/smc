@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14213d">
+<meta name="description" content="Sohel Math Care – গণিত শেখার নির্ভরযোগ্য কোচিং সেন্টার। অনলাইনে ভর্তির আবেদন করুন।">
+<title>Sohel Math Care – Where Logic Meets Success</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14213d;--ink2:#1f3260;--chalk:#f5c542;--paper:#f6f7fb;--line:#dde2ee;--mut:#5d6985;--blue:#2750c7;--ok:#12805c;--bad:#c93a3a;--w:1080px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:'Hind Siliguri',system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6}
+a{color:inherit}.wrap{max-width:var(--w);margin:0 auto;padding:0 18px}
+nav{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;height:62px}
+.brand{font-weight:700;font-size:1.15rem;letter-spacing:.5px;text-decoration:none}.brand small{display:block;font-size:.7rem;font-weight:400;color:var(--chalk);line-height:1}
+.links{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.links a{text-decoration:none;font-size:.9rem;padding:6px 10px;border-radius:8px;color:#c9d3ee}.links a:hover{color:#fff}
+.links .hide-m{display:inline}
+.btn{display:inline-block;border:0;border-radius:10px;padding:12px 20px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;text-align:center}
+.btn-y{background:var(--chalk);color:var(--ink)}.btn-o{border:1.5px solid #ffffff80;color:#fff;background:transparent}.btn-b{background:var(--blue);color:#fff;width:100%}
+.btn-sm{padding:7px 14px;font-size:.88rem}.btn:hover{filter:brightness(1.08)}.btn:disabled{background:#94a3b8;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--chalk);outline-offset:2px}
+.hero{background:var(--ink);color:#fff;position:relative;overflow:hidden;padding:72px 0 86px}
+.hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff14 1px,transparent 1px),linear-gradient(90deg,#ffffff14 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(#000 40%,transparent)}
+.hero .wrap{position:relative}
+.eyebrow{color:var(--chalk);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.8rem}
+h1{font-size:clamp(2rem,6vw,3.6rem);line-height:1.15;margin:10px 0 14px;max-width:16ch}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--chalk) 62%,var(--chalk) 92%,transparent 92%);color:#fff}
+.hero p{max-width:52ch;color:#c9d3ee;font-size:1.08rem}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.sym{position:absolute;right:4%;top:40px;display:grid;gap:14px;opacity:.9}
+.sym span{display:grid;place-items:center;width:78px;height:78px;border:2px solid #ffffff40;border-radius:16px;font-size:2rem;color:var(--chalk);transform:rotate(-6deg)}
+.sym span:nth-child(2){transform:rotate(5deg) translateX(34px)}.sym span:nth-child(3){transform:rotate(-3deg)}
+.notice{background:var(--chalk);color:var(--ink);font-weight:600}.notice .wrap{padding-top:10px;padding-bottom:10px}
+.notice ul{margin:0;padding-left:20px}
+section{padding:60px 0}section h2{font-size:1.8rem;margin:0 0 6px}.sub{color:var(--mut);margin:0 0 28px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px}
+.card i{font-style:normal;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--ink);color:var(--chalk);font-size:1.3rem;margin-bottom:10px}
+.card h3{margin:0 0 4px;font-size:1.1rem}.card p{margin:0;color:var(--mut);font-size:.95rem}
+.chips{display:flex;gap:10px;flex-wrap:wrap}.chips span{background:#fff;border:1.5px solid var(--ink);border-radius:30px;padding:8px 18px;font-weight:700}
+.chips span small{color:var(--ok);font-weight:600;margin-left:6px}
+.band{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.adm{display:grid;grid-template-columns:1fr 1.2fr;gap:30px;align-items:start}
+form{background:#fff;border:1px solid var(--line);border-top:5px solid var(--chalk);border-radius:14px;padding:22px}
+label{display:block;font-weight:600;font-size:.85rem;color:var(--mut);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #c5cde0;border-radius:8px;font:inherit;background:#fff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.hp{position:absolute;left:-9999px;opacity:0}
+#msg{margin-top:12px;padding:12px;border-radius:8px;display:none}#msg.ok{display:block;background:#e3f6ee;color:var(--ok)}#msg.er{display:block;background:#fde8e8;color:var(--bad)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}.steps li{counter-increment:s;padding:0 0 14px 46px;position:relative}
+.steps li:before{content:counter(s);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--chalk);display:grid;place-items:center;font-weight:700}
+footer{background:var(--ink);color:#c9d3ee;padding:36px 0 26px}footer .wrap{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}
+footer b{color:#fff}footer a{color:var(--chalk)}
+@media(max-width:800px){.adm{grid-template-columns:1fr}.sym{display:none}.links .hide-m{display:none}.row{grid-template-columns:1fr}.hero{padding:48px 0 60px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+ <a class="brand" href="#top">SOHEL MATH CARE<small>Where Logic Meets Success</small></a>
+ <div class="links">
+  <a class="hide-m" href="#why">কেন আমরা</a><a class="hide-m" href="#classes">ক্লাস</a><a class="hide-m" href="#admission">ভর্তি</a><a class="hide-m" href="#contact">যোগাযোগ</a>
+  <a class="btn btn-y btn-sm" href="portal.html">অভিভাবক / স্টুডেন্ট লগইন</a>
+ </div>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+ <div class="eyebrow">গণিত কোচিং সেন্টার</div>
+ <h1>যুক্তি যেখানে <em>সাফল্যের</em> শুরু</h1>
+ <p>মুখস্থ নয়, বুঝে শেখা। ছোট ব্যাচ, নিয়মিত পরীক্ষা, আর অভিভাবকের হাতে সন্তানের অগ্রগতির পুরো হিসাব।</p>
+ <div class="cta"><a class="btn btn-y" href="#admission">অনলাইনে ভর্তির আবেদন</a><a class="btn btn-o" href="portal.html">ফলাফল ও বেতন দেখুন</a></div>
+ <div class="sym" aria-hidden="true"><span>∑</span><span>π</span><span>√x</span></div>
+</div></header>
+
+<div class="notice" id="notice" style="display:none"><div class="wrap"><ul id="notice_list"></ul></div></div>
+
+<section id="why"><div class="wrap">
+ <h2>কেন Sohel Math Care</h2><p class="sub">পড়াশোনার পাশাপাশি যে বিষয়গুলোয় আমরা আলাদা</p>
+ <div class="grid4">
+  <div class="card"><i>1</i><h3>ছোট ব্যাচ</h3><p>প্রতিটি শিক্ষার্থীর দিকে আলাদা মনোযোগ দেওয়া হয়।</p></div>
+  <div class="card"><i>2</i><h3>নিয়মিত পরীক্ষা</h3><p>মডেল টেস্টের ফলাফল, গ্রেড ও মেধাক্রমসহ।</p></div>
+  <div class="card"><i>3</i><h3>অভিভাবক পোর্টাল</h3><p>ঘরে বসে বকেয়া, রেজাল্ট ও বেতন জমার স্লিপ।</p></div>
+  <div class="card"><i>4</i><h3>বুঝে শেখা</h3><p>সূত্র মুখস্থ নয়, ধারণা পরিষ্কার করে অনুশীলন।</p></div>
+ </div>
+</div></section>
+
+<section id="classes" class="band"><div class="wrap">
+ <h2>চলমান ক্লাস</h2><p class="sub">সময়সূচি ও ব্যাচের তথ্য জানতে যোগাযোগ করুন</p>
+ <div class="chips" id="class_chips"></div>
+ <p class="sub" style="margin-top:16px" id="hours"></p>
+</div></section>
+
+<section id="admission"><div class="wrap adm">
+ <div>
+  <h2>অনলাইনে ভর্তির আবেদন</h2><p class="sub">ফর্ম পূরণ করুন, আমরা ফোনে যোগাযোগ করে ভর্তি নিশ্চিত করব।</p>
+  <ol class="steps"><li><b>আবেদন করুন</b><br>পাশের ফর্মে সন্তানের তথ্য দিন।</li><li><b>আমরা যোগাযোগ করব</b><br>দেওয়া নম্বরে ফোন বা WhatsApp-এ।</li><li><b>ভর্তি ও আইডি</b><br>ফি জমা দিলে স্টুডেন্ট আইডি ও পোর্টালে প্রবেশ।</li></ol>
+ </div>
+ <form id="f" novalidate>
+  <div class="row"><div><label>শিক্ষার্থীর নাম *</label><input id="a_name" maxlength="80" autocomplete="off"></div><div><label>শ্রেণি *</label><select id="a_cls"></select></div></div>
+  <div class="row"><div><label>পিতার নাম</label><input id="a_father" maxlength="80"></div><div><label>মাতার নাম</label><input id="a_mother" maxlength="80"></div></div>
+  <div class="row"><div><label>অভিভাবকের ফোন *</label><input id="a_phone" inputmode="tel" placeholder="01XXXXXXXXX"></div><div><label>স্কুলের নাম</label><input id="a_school" maxlength="80"></div></div>
+  <label>কিছু জানাতে চান?</label><textarea id="a_note" rows="2" maxlength="200"></textarea>
+  <input class="hp" id="a_web" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <button class="btn btn-b" id="send" type="submit" style="margin-top:14px">আবেদন জমা দিন</button>
+  <div id="msg" role="status"></div>
+ </form>
+</div></section>
+
+<footer id="contact"><div class="wrap">
+ <div><b>SOHEL MATH CARE</b><br>Where Logic Meets Success<br><span id="addr"></span></div>
+ <div><b>যোগাযোগ</b><br>ফোন: <a id="tel" href="#"></a><br>WhatsApp: <a id="wa" href="#" target="_blank" rel="noopener">মেসেজ করুন</a></div>
+ <div><b>লগইন</b><br><a href="portal.html">অভিভাবক / স্টুডেন্ট</a><br><a href="admin.html">স্টাফ / অ্যাডমিন</a></div>
+</div></footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, getDoc, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeAuth, browserLocalPersistence, inMemoryPersistence, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+// ===== এখানে সেন্টারের তথ্য বদলান =====
+const SITE = {
+  phone: '01XXXXXXXXX',
+  address: 'আপনার ঠিকানা এখানে লিখুন',
+  hours: 'ক্লাসের সময়: শনি–বৃহস্পতি, বিকাল ৩টা থেকে রাত ৮টা',
+  classes: [6,7,8,9,10]
+};
+const app = initializeApp({
+  apiKey:"AIzaSyBdSM2HqyHdfBR5lBOL8auQv_AZBiKqFng", authDomain:"smcweb-ad35e.firebaseapp.com",
+  projectId:"smcweb-ad35e", storageBucket:"smcweb-ad35e.firebasestorage.app",
+  messagingSenderId:"124372753816", appId:"1:124372753816:web:e7824351434a16f14d1fed"});
+const db = getFirestore(app), auth = initializeAuth(app,{persistence:[browserLocalPersistence,inMemoryPersistence]});
+const $ = id => document.getElementById(id);
+const loc = p => { let d=String(p||'').replace(/\D/g,''); if(d.startsWith('880')) d=d.slice(2); if(d.length===10&&d[0]==='1') d='0'+d; return d; };
+
+$('addr').textContent=SITE.address; $('hours').textContent=SITE.hours;
+$('tel').textContent=SITE.phone; $('tel').href='tel:'+SITE.phone; $('wa').href='https://wa.me/88'+loc(SITE.phone);
+$('class_chips').innerHTML=SITE.classes.map(c=>`<span>ক্লাস ${c}<small>ভর্তি চলছে</small></span>`).join('');
+$('a_cls').innerHTML='<option value="">বাছুন</option>'+[...Array(12)].map((_,i)=>`<option value="${i+1}">ক্লাস ${i+1}</option>`).join('');
+
+(async()=>{ try{ const d=await getDoc(doc(db,'site','main')); const n=d.exists()?(d.data().notices||[]):[];
+  if(n.length){ $('notice_list').innerHTML=''; n.forEach(t=>{ const li=document.createElement('li'); li.textContent=t; $('notice_list').appendChild(li); }); $('notice').style.display='block'; } }catch(e){} })();
+
+const msg=(t,k)=>{ const m=$('msg'); m.textContent=t; m.className=k; };
+$('f').onsubmit=async e=>{
+  e.preventDefault();
+  const name=$('a_name').value.trim(), cls=$('a_cls').value, phone=loc($('a_phone').value);
+  if($('a_web').value) return;                                   // বট ধরার ফাঁদ
+  if(name.length<2||!cls) return msg('শিক্ষার্থীর নাম ও শ্রেণি দিন','er');
+  if(!/^01\d{9}$/.test(phone)) return msg('সঠিক ১১ সংখ্যার মোবাইল নম্বর দিন','er');
+  try{ if(Date.now()-(+localStorage.getItem('smc-app')||0)<60000) return msg('একটু পরে আবার চেষ্টা করুন','er'); }catch(e){}
+  $('send').disabled=true; msg('জমা হচ্ছে...','ok');
+  try{
+    const u=await new Promise(r=>{ const off=onAuthStateChanged(auth,x=>{off();r(x);}); });
+    if(!u) await signInAnonymously(auth);
+    await addDoc(collection(db,'applications'),{name,father:$('a_father').value.trim(),mother:$('a_mother').value.trim(),phone,cls,school:$('a_school').value.trim(),note:$('a_note').value.trim(),status:'pending',ts:Date.now()});
+    try{ localStorage.setItem('smc-app',String(Date.now())); }catch(e){}
+    $('f').reset(); msg('ধন্যবাদ! আপনার আবেদন জমা হয়েছে। আমরা শীঘ্রই '+phone+' নম্বরে যোগাযোগ করব।','ok');
+  }catch(er){ msg('জমা হয়নি, একটু পরে আবার চেষ্টা করুন বা ফোনে যোগাযোগ করুন ('+(er.code||er.message)+')','er'); }
+  $('send').disabled=false;
+};
+</script>
+</body>
+</html>

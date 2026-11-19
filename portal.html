@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14213d">
+<title>Sohel Math Care – অভিভাবক পোর্টাল</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14213d;--chalk:#f5c542;--line:#dde2ee;--mut:#64708a;--ok:#12805c;--bad:#c93a3a;--blue:#2750c7}
+*{box-sizing:border-box}body{margin:0;font-family:'Hind Siliguri',system-ui,sans-serif;color:var(--ink);background:#f6f7fb}
+header{background:var(--ink);color:#fff;padding:14px 18px}header b{font-size:1.2rem}header small{display:block;color:var(--chalk)}
+.wrap{max-width:560px;margin:0 auto;padding:14px}.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+h2,h3{margin:0 0 8px}label{display:block;font-weight:600;font-size:.85rem;color:var(--mut);margin:10px 0 4px}
+input,select{width:100%;padding:11px 12px;border:1px solid #c5cde0;border-radius:8px;font:inherit}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px;padding:12px 16px;font-weight:700;width:100%;margin-top:12px;background:var(--blue);color:#fff}
+button:disabled{background:#94a3b8}button.sm{width:auto;padding:6px 12px;margin:6px 0 0;font-size:.85rem}button.ghost{background:#eef1f8;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:.78rem;font-weight:700}
+.w{background:#fff4d1;color:#8a6500}.p{background:#e3f6ee;color:var(--ok)}.r{background:#fde8e8;color:var(--bad)}
+.due{color:var(--bad);font-weight:700}.mut{color:var(--mut);font-size:.85rem}.err{color:var(--bad);margin-top:10px}
+.tw{overflow-x:auto}.toast{position:fixed;left:12px;right:12px;bottom:14px;background:var(--ink);color:#fff;padding:12px 16px;border-radius:10px;border-left:5px solid var(--chalk);z-index:9}
+</style>
+</head>
+<body>
+<header><a href="index.html" style="color:#fff;text-decoration:none"><b>SOHEL MATH CARE</b><small>অভিভাবক পোর্টাল · ← হোম পেজ</small></a></header>
+<div class="wrap">
+ <div id="login" class="card">
+  <h2>প্রবেশ করুন</h2><div class="mut">স্টুডেন্ট আইডি ও সেন্টারে দেওয়া ফোন নম্বর লিখুন</div>
+  <label>স্টুডেন্ট আইডি</label><input id="i_id" placeholder="SMC-70001" autocapitalize="characters" autocomplete="off">
+  <label>ফোন নম্বর</label><input id="i_ph" inputmode="tel" placeholder="01XXXXXXXXX">
+  <button id="go">ঢুকুন</button><div id="lerr" class="err"></div>
+ </div>
+ <div id="home" style="display:none">
+  <div class="card"><h2 id="p_name"></h2><div id="p_meta" class="mut"></div><button class="sm ghost" id="out">বের হোন</button></div>
+  <div class="card" id="due_card"></div>
+  <div class="card" id="pay_card" style="display:none">
+   <h3>বেতন জমা দিন</h3>
+   <div class="mut" id="how"></div>
+   <label>কোন মাসের</label><select id="p_month"></select>
+   <label>টাকার পরিমাণ</label><input id="p_amt" type="number" inputmode="numeric">
+   <label>মেথড</label><select id="p_method"><option>bKash</option><option>Nagad</option><option>Rocket</option></select>
+   <label>TrxID (লেনদেন নম্বর)</label><input id="p_trx" autocapitalize="characters" autocomplete="off" placeholder="যেমন 9AB3XYZ12">
+   <button id="pay">জমা দিন</button>
+  </div>
+  <div class="card"><h3>আমার অনুরোধ</h3><div id="reqs"></div><button class="sm ghost" id="refresh">🔄 রিফ্রেশ</button></div>
+  <div class="card"><h3>রেজাল্ট</h3><div id="res" class="tw"></div></div>
+  <div class="card"><h3>সাম্প্রতিক পেমেন্ট</h3><div id="hist" class="tw"></div></div>
+  <div class="mut" id="upd" style="text-align:center;margin-bottom:20px"></div>
+ </div>
+</div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, getDoc, getDocs, collection, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeAuth, browserLocalPersistence, inMemoryPersistence, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+// ===== সেন্টারের তথ্য: এখানে নিজের নম্বর বসান =====
+const CENTER = { bkash: '01XXXXXXXXX', nagad: '', note: 'bKash অ্যাপে "Payment" অপশন ব্যবহার করুন' };
+
+const app = initializeApp({
+  apiKey:"AIzaSyBdSM2HqyHdfBR5lBOL8auQv_AZBiKqFng", authDomain:"smcweb-ad35e.firebaseapp.com",
+  projectId:"smcweb-ad35e", storageBucket:"smcweb-ad35e.firebasestorage.app",
+  messagingSenderId:"124372753816", appId:"1:124372753816:web:e7824351434a16f14d1fed"});
+const db = getFirestore(app), auth = initializeAuth(app,{persistence:[browserLocalPersistence,inMemoryPersistence]});
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const taka = n => (Number(n)||0).toLocaleString('en-US')+' ৳';
+const loc = p => { let d=String(p||'').replace(/\D/g,''); if(d.startsWith('880')) d=d.slice(2); if(d.length===10&&d[0]==='1') d='0'+d; return d; };
+function toast(m){ const t=document.createElement('div'); t.className='toast'; t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(),3500); }
+let KEY=null, D=null, REQS=[];
+
+async function ensureAuth(){
+  const u = await new Promise(r=>{ const off=onAuthStateChanged(auth,x=>{off();r(x);}); });
+  if(!u) await signInAnonymously(auth);
+}
+async function enter(id, ph, auto){
+  id=id.trim().toUpperCase(); ph=loc(ph);
+  if(!/^SMC-\d{5,6}$/.test(id)||ph.length!==11){ $('lerr').textContent='সঠিক আইডি ও ১১ সংখ্যার ফোন নম্বর দিন'; return; }
+  $('go').disabled=true; $('lerr').textContent='';
+  try{
+    await ensureAuth();
+    const s=await getDoc(doc(db,'portal',id+'_'+ph));
+    if(!s.exists()){ $('lerr').textContent='তথ্য মেলেনি। আইডি ও ফোন নম্বর যাচাই করুন, অথবা সেন্টারে যোগাযোগ করুন।'; $('go').disabled=false; return; }
+    KEY=id+'_'+ph; D=s.data();
+    try{ sessionStorage.setItem('smc-p',JSON.stringify({id,ph})); }catch(e){}
+    $('login').style.display='none'; $('home').style.display='block'; show(); await loadReqs();
+  }catch(e){ $('lerr').textContent='সংযোগ সমস্যা ('+(e.code||e.message)+')। একটু পরে আবার চেষ্টা করুন।'; }
+  $('go').disabled=false;
+}
+function show(){
+  $('p_name').textContent=D.name; $('p_meta').textContent=`আইডি: ${D.id} · Class ${D.cls} · মাসিক ফি ${taka(D.fee)}`;
+  const dues=D.dues||[];
+  $('due_card').innerHTML=dues.length?`<h3>বকেয়া</h3>${dues.map(d=>`<div>${esc(d.m)} ${esc(d.y)}: <span class="due">${taka(d.due)}</span></div>`).join('')}<div style="margin-top:8px"><b>মোট: <span class="due">${taka(D.totalDue)}</span></b></div>`:'<h3 style="color:var(--ok)">✓ কোনো বকেয়া নেই</h3>';
+  $('pay_card').style.display=dues.length?'block':'none';
+  $('p_month').innerHTML=dues.map((d,i)=>`<option value="${i}">${esc(d.m)} ${esc(d.y)} (বকেয়া ${taka(d.due)})</option>`).join('');
+  $('p_amt').value=dues[0]?.due||'';
+  $('how').innerHTML=`১) ${esc(CENTER.note)}: <b>${esc(CENTER.bkash)}</b>${CENTER.nagad?` (Nagad: <b>${esc(CENTER.nagad)}</b>)`:''}<br>২) নিচে TrxID ও টাকা লিখে জমা দিন।<br>৩) সেন্টার যাচাই করলে এখানে "পেইড" দেখাবে।`;
+  $('res').innerHTML=(D.results||[]).length?`<table><tr><th>পরীক্ষা</th><th>নম্বর</th><th>গ্রেড</th><th>র‍্যাংক</th></tr>${D.results.map(r=>`<tr><td>${esc(r.exam)}<br><span class="mut">${esc(r.year)} · Class ${esc(r.cls)}</span></td><td>${esc(r.marks)}</td><td>${esc(r.grade)}</td><td>${esc(r.rank)}/${esc(r.n)}</td></tr>`).join('')}</table>`:'<div class="mut">এখনো কোনো রেজাল্ট নেই</div>';
+  const h=D.payments||[];
+  $('hist').innerHTML=h.length?`<table><tr><th>তারিখ</th><th>বিবরণ</th><th>টাকা</th><th></th></tr>${h.map((p,i)=>`<tr><td>${esc(p.date)}</td><td>${esc(p.type)}${p.month&&p.month!=='-'?'<br><span class="mut">'+esc(p.month)+' '+esc(p.year)+'</span>':''}</td><td>${taka(p.amount)}</td><td>${p.rcpt?`<button class="sm ghost" data-h="${i}">স্লিপ</button>`:''}</td></tr>`).join('')}</table>`:'<div class="mut">কোনো পেমেন্ট নেই</div>';
+  $('upd').textContent='তথ্য সর্বশেষ হালনাগাদ: '+new Date(D.updated||Date.now()).toLocaleString('en-GB');
+}
+async function loadReqs(){
+  try{ REQS=(await getDocs(collection(db,'portal',KEY,'requests'))).docs.map(d=>({...d.data(),_id:d.id})).sort((a,b)=>(b.ts||0)-(a.ts||0)); }catch(e){ REQS=[]; }
+  $('reqs').innerHTML=REQS.length?REQS.map((r,i)=>`<div style="border-bottom:1px solid var(--line);padding:8px 0"><b>${esc(r.month)} ${esc(r.year)}</b> — ${taka(r.amount)}<div class="mut">${esc(r.method)} · ${esc(r.trx)}</div>
+   ${r.status==='approved'?`<span class="badge p">পেইড ✓ Paid</span> <button class="sm" data-r="${i}">⬇ স্লিপ ডাউনলোড</button>`:r.status==='rejected'?`<span class="badge r">বাতিল</span> <span class="mut">${esc(r.reason||'')}</span>`:`<span class="badge w">Waiting Approval</span>`}</div>`).join(''):'<div class="mut">এখনো কোনো অনুরোধ নেই</div>';
+}
+async function slip(o){
+  try{ await document.fonts.load("700 20px 'Hind Siliguri'"); }catch(e){}
+  const c=document.createElement('canvas'); c.width=720; c.height=860; const x=c.getContext('2d'), F="'Hind Siliguri',sans-serif";
+  x.fillStyle='#fff'; x.fillRect(0,0,720,860); x.strokeStyle='#14213d'; x.lineWidth=4; x.strokeRect(14,14,692,832);
+  x.fillStyle='#14213d'; x.fillRect(14,14,692,110); x.textAlign='center'; x.fillStyle='#f5c542'; x.font=`700 36px ${F}`; x.fillText('SOHEL MATH CARE',360,68);
+  x.fillStyle='#fff'; x.font=`400 20px ${F}`; x.fillText('Payment Confirmation Slip',360,102);
+  const rows=[['Receipt No',o.rcpt||'-'],['Date',o.date||'-'],['Student',o.name],['ID / Class',`${o.id} · Class ${o.cls}`],['Description',o.desc],['Method',o.method?o.method+(o.trx?' · '+o.trx:''):'-'],['Amount',taka(o.amount)]];
+  x.textAlign='left'; rows.forEach((r,i)=>{ const y=170+i*74; x.fillStyle='#64708a'; x.font=`400 18px ${F}`; x.fillText(r[0],50,y); x.fillStyle='#14213d'; x.font=`700 26px ${F}`; x.fillText(String(r[1]),50,y+34); });
+  x.save(); x.translate(560,740); x.rotate(-.18); x.strokeStyle='#12805c'; x.lineWidth=5; x.strokeRect(-85,-38,170,76); x.fillStyle='#12805c'; x.textAlign='center'; x.font=`700 44px ${F}`; x.fillText('PAID',0,14); x.restore();
+  x.fillStyle='#64708a'; x.textAlign='left'; x.font=`400 16px ${F}`; x.fillText('Computer-generated slip. Thank you for choosing Sohel Math Care.',50,820);
+  c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`slip-${o.rcpt||'payment'}.png`; a.click(); });
+}
+$('go').onclick=()=>enter($('i_id').value,$('i_ph').value);
+$('i_ph').onkeydown=e=>{ if(e.key==='Enter') $('go').click(); };
+$('out').onclick=()=>{ try{ sessionStorage.removeItem('smc-p'); }catch(e){} location.reload(); };
+$('refresh').onclick=async()=>{ try{ const s=await getDoc(doc(db,'portal',KEY)); if(s.exists()){ D=s.data(); show(); } }catch(e){} await loadReqs(); };
+$('p_month').onchange=()=>{ $('p_amt').value=D.dues[+$('p_month').value]?.due||''; };
+$('pay').onclick=async()=>{
+  const d=D.dues[+$('p_month').value], amt=parseFloat($('p_amt').value), trx=$('p_trx').value.trim().toUpperCase(), method=$('p_method').value;
+  if(!d) return;
+  if(!(amt>0)||amt>d.due) return toast(`টাকা ১ থেকে ${d.due} এর মধ্যে দিন`);
+  if(!/^[A-Z0-9]{6,20}$/.test(trx)) return toast('সঠিক TrxID দিন (অক্ষর ও সংখ্যা, ৬-২০ ঘর)');
+  if(REQS.some(r=>r.status==='pending'&&r.month===d.m&&String(r.year)===String(d.y))) return toast('এই মাসের একটি অনুরোধ আগে থেকেই অপেক্ষমান');
+  if(REQS.some(r=>r.trx===trx&&r.status!=='rejected')) return toast('এই TrxID আগেই জমা দেওয়া হয়েছে');
+  $('pay').disabled=true;
+  try{
+    const rid=doc(collection(db,'inbox')).id, base={trx,amount:amt,month:d.m,year:d.y,method,status:'pending',ts:Date.now()};
+    const b=writeBatch(db); b.set(doc(db,'portal',KEY,'requests',rid),base); b.set(doc(db,'inbox',rid),{...base,key:KEY,id:D.id,name:D.name,cls:D.cls}); await b.commit();
+    $('p_trx').value=''; toast('জমা হয়েছে। অনুমোদনের অপেক্ষায়।'); await loadReqs();
+  }catch(e){ toast('জমা হয়নি ('+(e.code||e.message)+')'); }
+  $('pay').disabled=false;
+};
+$('reqs').onclick=e=>{ const b=e.target.closest('button[data-r]'); if(!b) return; const r=REQS[+b.dataset.r];
+  slip({rcpt:r.rcpt,date:r.payDate,name:D.name,id:D.id,cls:D.cls,desc:`Monthly Fee – ${r.month} ${r.year}`,method:r.method,trx:r.trx,amount:r.amount}); };
+$('hist').onclick=e=>{ const b=e.target.closest('button[data-h]'); if(!b) return; const p=D.payments[+b.dataset.h];
+  slip({rcpt:p.rcpt,date:p.date,name:D.name,id:D.id,cls:D.cls,desc:p.type+(p.month&&p.month!=='-'?` – ${p.month} ${p.year}`:''),method:p.method,trx:p.trx,amount:p.amount}); };
+try{ const s=JSON.parse(sessionStorage.getItem('smc-p')||'null'); if(s) enter(s.id,s.ph,true); }catch(e){}
+</script>
+</body>
+</html>
