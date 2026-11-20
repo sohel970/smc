@@ -84,7 +84,7 @@ input,select{width:100%;padding:13px 14px;border:1.5px solid #c9d1e4;border-radi
   <h2>প্রবেশ করুন</h2><div class="mut">স্টুডেন্ট আইডি ও সেন্টারে দেওয়া ফোন নম্বর লিখুন</div>
   <label for="i_id">স্টুডেন্ট আইডি</label><input id="i_id" placeholder="SMC-70001" autocapitalize="characters" autocomplete="off">
   <label for="i_ph">ফোন নম্বর</label><input id="i_ph" inputmode="tel" placeholder="01XXXXXXXXX">
-  <button class="btn b-b full" id="go" style="margin-top:20px">ঢুকুন →</button><div id="lerr" class="err" role="alert"></div>
+  <button class="btn b-b full" id="go" style="margin-top:20px">প্রবেশ করুন →</button><div id="lerr" class="err" role="alert"></div>
  </div></div>
 </section>
 
@@ -125,7 +125,7 @@ import { getFirestore, doc, getDoc, getDocs, collection, writeBatch } from "http
 import { initializeAuth, browserLocalPersistence, inMemoryPersistence, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // ===== সেন্টারের তথ্য: এখানে নিজের নম্বর বসান =====
-const CENTER = { phone:'01783525498', bkash:'01XXXXXXXXX', nagad:'', rocket:'', note:'অ্যাপে "Payment" অপশন ব্যবহার করে টাকা পাঠান' };
+const CENTER = { phone:'01783525498', bkash:'01783525498, nagad:'', rocket:'', note:'অ্যাপে "Payment" অপশন ব্যবহার করে টাকা পাঠান' };
 
 const app = initializeApp({
   apiKey:"AIzaSyBdSM2HqyHdfBR5lBOL8auQv_AZBiKqFng", authDomain:"smcweb-ad35e.firebaseapp.com",
