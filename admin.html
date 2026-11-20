@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sohel Math Care – Management</title>
+<meta name="theme-color" content="#14213d">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14213d;--ink2:#1f3260;--chalk:#f5c542;--paper:#f6f7fb;--line:#dde2ee;--mut:#64708a;--ok:#12805c;--bad:#c93a3a;--blue:#2750c7}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Hind Siliguri',system-ui,sans-serif;color:var(--ink);background:var(--paper);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px;background-attachment:fixed}
+button,input,select{font:inherit}
+:focus-visible{outline:3px solid var(--chalk);outline-offset:2px}
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ink);padding:16px}
+.login-box{background:#fff;border-radius:14px;padding:2rem;width:100%;max-width:380px;border-top:6px solid var(--chalk)}
+.login-box h2{margin:0 0 4px;font-size:1.5rem}.login-box p.sub{margin:0 0 20px;color:var(--mut)}
+#main-app{display:none}
+nav{background:var(--ink);color:#fff;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
+.brand{font-weight:700;font-size:1.25rem;letter-spacing:.5px}.brand small{display:block;font-weight:400;font-size:.75rem;color:var(--chalk)}
+.container{max-width:1100px;margin:1.5rem auto;padding:0 14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:10px;padding:12px 16px}
+.stat:nth-child(2){border-left-color:var(--ok)}.stat:nth-child(3){border-left-color:var(--chalk)}.stat:nth-child(4){border-left-color:var(--bad)}
+.stat b{display:block;font-size:1.6rem}.stat span{color:var(--mut);font-size:.85rem}
+.tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--ink);padding:6px;border-radius:12px;overflow-x:auto}
+.tab-btn{flex:1;min-width:92px;padding:10px;border:0;background:transparent;color:#c9d3ee;cursor:pointer;font-weight:600;border-radius:8px;white-space:nowrap}
+.tab-btn.active{background:var(--chalk);color:var(--ink)}
+.section{display:none;background:#fff;padding:1.6rem;border-radius:14px;border:1px solid var(--line);box-shadow:0 8px 24px -12px rgba(20,33,61,.25)}
+.section.active{display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
+.g3{grid-template-columns:repeat(4,1fr)}
+.form-group{margin-bottom:12px}
+label{display:block;margin-bottom:4px;font-weight:600;font-size:.85rem;color:var(--mut)}
+input,select{width:100%;padding:10px 12px;border:1px solid #c5cde0;border-radius:8px;background:#fff}
+input:focus,select:focus{border-color:var(--blue)}
+.btn{padding:12px 18px;border:0;border-radius:8px;cursor:pointer;font-weight:700;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:filter .2s}
+.btn:hover{filter:brightness(1.1)}.btn:disabled{background:#94a3b8!important;cursor:not-allowed}
+.btn-primary{background:var(--blue);color:#fff}.btn-success{background:var(--ok);color:#fff}.btn-info{background:var(--ink2);color:#fff}.btn-warn{background:var(--chalk);color:var(--ink)}
+.btn-sm{width:auto;display:inline-flex;margin:12px 8px 0 0}
+.btn-logout{background:transparent;color:#fff;border:1px solid #ffffff66;padding:7px 16px;border-radius:8px;cursor:pointer}
+.spin{width:14px;height:14px;border:2px solid #fff;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;display:none}
+.busy .spin{display:inline-block}@keyframes sp{to{transform:rotate(360deg)}}
+.tbl-wrap{overflow-x:auto;margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+th{background:#eef1f8}tbody tr:nth-child(even){background:#fafbfe}
+.empty{text-align:center;color:var(--mut);padding:22px}
+.suggest{position:absolute;width:100%;background:#fff;border:1px solid var(--line);border-radius:8px;z-index:30;max-height:220px;overflow:auto;box-shadow:0 10px 20px rgba(0,0,0,.1)}
+.suggest div{padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;border-bottom:1px solid #f1f3f8}.suggest div:hover{background:#eef3ff}
+.sel{margin:6px 0 14px;padding:12px 14px;background:#eef3ff;border-left:4px solid var(--blue);border-radius:8px;display:none}
+.sub-tabs{display:flex;gap:8px;margin-bottom:16px}
+.sub-tab{padding:8px 16px;border:0;background:#eef1f8;border-radius:20px;cursor:pointer;font-weight:600}.sub-tab.active{background:var(--blue);color:#fff}
+.marks-input{width:90px;text-align:center;padding:5px}
+.badge{padding:2px 10px;border-radius:12px;font-size:.78rem;font-weight:600;background:#e3f6ee;color:var(--ok)}
+.toasts{position:fixed;right:16px;bottom:16px;z-index:99;display:grid;gap:8px}
+.toast{background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;border-left:5px solid var(--chalk);max-width:320px;animation:in .25s}
+.toast.err{border-left-color:#ff6b6b}.toast.ok{border-left-color:#3ddc97}@keyframes in{from{opacity:0;transform:translateX(20px)}}
+dialog{border:1px solid var(--line);border-radius:14px;padding:20px;width:min(520px,92vw);background:#fff;color:var(--ink)}dialog::backdrop{background:#0008}
+.nav-r{display:flex;gap:8px}.icon-btn{background:transparent;color:#fff;border:1px solid #ffffff66;padding:7px 12px;border-radius:8px;cursor:pointer}
+.x{background:transparent;border:0;color:var(--bad);cursor:pointer;font-weight:700}
+nav{height:68px;padding-top:0;padding-bottom:0}.brand{line-height:1.15}.brand small{line-height:1.2}
+.tab-btn{display:flex;align-items:center;gap:10px}.tab-btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.pg{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px}.pg button{padding:6px 14px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;cursor:pointer}.pg button:disabled{opacity:.4;cursor:default}
+@media(min-width:900px){.tabs{position:fixed;left:0;top:68px;bottom:0;width:210px;flex-direction:column;border-radius:0;margin:0;padding:14px 10px;overflow-y:auto;z-index:15}.tab-btn{flex:none;text-align:left}.container{margin-left:230px;margin-right:20px;max-width:1100px}}
+@media(max-width:899px){.tabs{position:fixed;bottom:0;left:0;right:0;border-radius:0;margin:0;z-index:25;padding:4px;gap:0}.tab-btn{min-width:66px;flex-direction:column;gap:2px;font-size:.68rem;padding:6px 2px}body{padding-bottom:72px}.toasts{bottom:84px}}
+#sess_sel{width:auto;padding:5px 8px;background:#ffffff18;color:#fff;border:1px solid #ffffff66}#sess_sel option{color:#14213d}
+#prof-dlg{width:min(720px,94vw);max-height:90vh;overflow:auto}#nav_user{color:#c9d3ee;font-size:.85rem;align-self:center;margin-right:6px}
+[data-theme=dark] #prof_body th{color:#14213d}@media(max-width:600px){#nav_user{display:none}}
+[data-theme=dark]{--paper:#0b1120;--ink:#e6eaf7;--line:#26314f;--mut:#9aa6c4}
+[data-theme=dark] nav,[data-theme=dark] .tabs,[data-theme=dark] #login-screen{background:#070b16}
+[data-theme=dark] .section,[data-theme=dark] .stat,[data-theme=dark] .login-box,[data-theme=dark] dialog,[data-theme=dark] .suggest{background:#141c33}
+[data-theme=dark] input,[data-theme=dark] select{background:#0e1527;color:var(--ink);border-color:#33426b}
+[data-theme=dark] th,[data-theme=dark] .sel,[data-theme=dark] .sub-tab{background:#1b2542}[data-theme=dark] tbody tr:nth-child(even){background:#111a30}
+[data-theme=dark] .tab-btn.active,[data-theme=dark] .btn-warn{color:#14213d}[data-theme=dark] tfoot tr{background:#1b2542!important}
+#print-area{display:none}
+@media(max-width:700px){.grid,.g3{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.section{padding:1rem}nav{padding:10px 14px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+@media print{
+ body{background:#fff!important;color:#000!important}
+ body>*:not(#print-area){display:none!important}
+ #print-area{display:block!important;color:#000}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ @page{size:A4;margin:10mm}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+</head>
+<body>
+
+<div id="login-screen"><div class="login-box">
+ <h2>Sohel Math Care</h2><p class="sub">অ্যাডমিন লগইন</p>
+ <div class="form-group"><label>Email</label><input type="email" id="login-email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email"></div>
+ <div class="form-group"><label>Password</label><input type="password" id="login-pass" autocomplete="current-password"></div>
+ <button class="btn btn-primary" id="login-btn"><span>Login</span><span class="spin"></span></button>
+</div></div>
+
+<div id="main-app">
+ <nav><div class="brand">SOHEL MATH CARE<small>Where Logic Meets Success</small></div><div class="nav-r"><select id="sess_sel" title="Session"></select><span id="nav_user"></span><button class="icon-btn" id="theme-btn" title="Dark / Light">🌓</button><button class="btn-logout" id="logout-btn">Logout</button></div></nav>
+ <div class="container">
+  <div class="stats">
+   <div class="stat"><b id="st_total">0</b><span>চলতি স্টুডেন্ট (Active)</span></div>
+   <div class="stat"><b id="st_today">0 ৳</b><span>আজকের কালেকশন</span></div>
+   <div class="stat"><b id="st_month">0 ৳</b><span id="st_month_l">এই মাসের কালেকশন</span></div>
+   <div class="stat"><b id="st_unpaid">0</b><span>এই মাসে বাকি</span></div>
+  </div>
+  <div class="tabs" role="tablist">
+   <button class="tab-btn active" data-sec="add-student">📝 Register</button>
+   <button class="tab-btn" data-sec="payment">💳 Fees</button>
+   <button class="tab-btn" data-sec="result-section">📊 Result</button>
+   <button class="tab-btn" data-sec="info-section">👥 Information</button>
+   <button class="tab-btn" data-sec="students-section">🎓 Students</button>
+   <button class="tab-btn" data-sec="reports">🧾 Reports</button>
+   <button class="tab-btn" data-sec="audit-section">🛡 Audit Log</button>
+   <button class="tab-btn" data-sec="dues-section">🧮 Dues</button>
+   <button class="tab-btn" data-sec="sms-section">📨 SMS</button>
+   <button class="tab-btn" data-sec="portal-section">🌐 Portal</button>
+   <button class="tab-btn" data-sec="website-section">🌍 Website</button>
+   <button class="tab-btn" data-sec="expenses-section">💸 Expenses</button>
+   <button class="tab-btn" data-sec="staff-section">👤 Team</button>
+   <button class="tab-btn" data-sec="trash-section">🗑 Trash</button>
+   <button class="tab-btn" data-sec="account-section">⚙ Account</button>
+  </div>
+
+  <div id="add-student" class="section active">
+   <div id="readmit_note" class="sel"></div>
+   <div class="grid">
+    <div class="form-group"><label>Student Name *</label><input id="s_name"></div>
+    <div class="form-group"><label>Father's Name</label><input id="s_father"></div>
+    <div class="form-group"><label>Mother's Name</label><input id="s_mother"></div>
+    <div class="form-group"><label>Class *</label><select id="s_class"></select></div>
+    <div class="form-group"><label>School Name</label><input id="s_school"></div>
+    <div class="form-group"><label>Contact No</label><input id="s_phone" inputmode="tel"></div>
+    <div class="form-group"><label>Monthly Fee *</label><input type="number" id="s_fee" value="2000" min="0"></div>
+    <div class="form-group"><label>Admission Fee (০ হলে রিসিপ্ট হবে না)</label><input type="number" id="s_adm" value="500" min="0"></div>
+   </div>
+   <button class="btn btn-primary" id="reg-btn"><span>Register Student</span><span class="spin"></span></button>
+  </div>
+
+  <div id="payment" class="section">
+   <div style="position:relative"><label>Search Student (ID / Name / Phone)</label>
+    <input id="search_input" placeholder="টাইপ করুন..." autocomplete="off"><div id="suggestion_box" class="suggest" hidden></div></div>
+   <div id="selected_info" class="sel"></div>
+   <div class="grid g3">
+    <div class="form-group"><label>Type</label><select id="pay_type"><option>Monthly Fee</option><option>Exam Fee</option><option>Others</option></select></div>
+    <div class="form-group"><label>Month</label><select id="pay_month"></select></div>
+    <div class="form-group"><label>Year</label><select id="pay_year"></select></div>
+    <div class="form-group"><label>Amount</label><input type="number" id="pay_amount" min="1"></div>
+   </div>
+   <div class="grid"><div class="form-group"><label>Payment Method</label><select id="pay_method"><option>Cash</option><option>bKash</option><option>Nagad</option><option>Rocket</option></select></div><div class="form-group"><label>TrxID (bKash/Nagad/Rocket হলে)</label><input id="pay_trx" autocapitalize="characters" autocomplete="off"></div></div>
+   <button class="btn btn-success" id="pay-btn"><span>Confirm Payment</span><span class="spin"></span></button>
+   <div id="stu_pay_hist"></div>
+  </div>
+
+  <div id="result-section" class="section">
+   <div class="sub-tabs"><button class="sub-tab active" data-sub="input">Input Result</button><button class="sub-tab" data-sub="print">Print Result</button></div>
+   <div id="res-input-content">
+    <div class="grid">
+     <div class="form-group"><label>Exam Name</label><input id="res_exam_name" list="exam_names" placeholder="নাম বাছুন বা নতুন লিখুন" autocomplete="off"><datalist id="exam_names"></datalist></div>
+     <div class="form-group"><label>Class</label><select id="res_class"></select></div>
+     <div class="form-group"><label>Year</label><select id="res_year"></select></div>
+    </div>
+    <div id="exam_chips" style="display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 10px"></div><div id="res_list_container"></div>
+    <button class="btn btn-success" style="margin-top:16px" id="save-res-btn" disabled><span>Save / Update Results</span><span class="spin"></span></button>
+   </div>
+   <div id="res-print-content" style="display:none">
+    <div class="grid">
+     <div class="form-group"><label>Select Exam</label><select id="print_exam_list"></select></div>
+     <div class="form-group"><label>Class</label><select id="print_res_class"></select></div>
+     <div class="form-group"><label>Year</label><select id="print_res_year"></select></div>
+    </div>
+    <button class="btn btn-primary" id="btn-sheet">Search Result Sheet</button>
+    <hr style="margin:18px 0;border:0;border-top:1px solid var(--line)">
+    <div class="form-group"><label>Student ID (Progress)</label><input id="single_stu_id" placeholder="SMC-10001"></div>
+    <button class="btn btn-info" id="btn-hist">View Student Progress</button>
+    <div id="result_view_area"></div>
+   </div>
+  </div>
+
+  <div id="info-section" class="section">
+   <div class="grid g3" style="grid-template-columns:repeat(3,1fr)">
+    <div class="form-group"><label>Search Type</label><select id="info_type"><option value="all">All Student List</option><option value="class">Class wise</option><option value="paid">Month wise Paid</option><option value="unpaid">Month wise Unpaid</option></select></div>
+    <div class="form-group" id="class_field" style="display:none"><label>Class</label><select id="info_class_val"></select></div>
+    <div class="form-group" id="month_field" style="display:none"><label>Month / Year</label><div style="display:flex;gap:6px"><select id="info_month_val"></select><select id="info_year_val"></select></div></div>
+   </div>
+   <button class="btn btn-primary" id="btn-info">Find Information</button>
+   <div id="info_out"></div>
+  </div>
+
+  <div id="students-section" class="section">
+   <div class="grid"><div class="form-group"><label>Search (Name / ID / Phone / School)</label><input id="stu_q"></div><div class="form-group"><label>Status</label><select id="stu_status"><option value="active">Active</option><option value="left">Left</option><option value="completed">Completed (পুরনো আইডি)</option><option value="all">All</option></select></div></div>
+   <div id="stu_out"></div><div id="stu_pg" class="pg"></div>
+  </div>
+
+  <div id="dues-section" class="section">
+   <div class="grid"><div class="form-group"><label>Class</label><select id="due_class"></select></div><div class="form-group"><label>Name / ID</label><input id="due_q"></div></div>
+   <p id="due_sum"></p><div id="due_out"></div><button class="btn btn-info btn-sm" id="due-print">🖨 Print Dues</button>
+  </div>
+  <div id="portal-section" class="section">
+   <div class="grid"><div class="form-group"><label>অভিভাবক পোর্টালের লিংক (যেখানে portal.html তুলেছেন)</label><input id="portal_url" placeholder="https://..."></div>
+   <div class="form-group" style="align-self:end"><button class="btn btn-info" id="portal-copy">📋 অভিভাবকদের জন্য মেসেজ কপি</button></div></div>
+   <button class="btn btn-primary" id="portal-sync"><span>🔄 Portal তথ্য সিংক করুন</span><span class="spin"></span></button><small id="portal_last" style="color:var(--mut)"></small>
+   <h4>অনুমোদনের অপেক্ষায়</h4><div id="inbox_pending"></div><h4>সাম্প্রতিক (পেইড / বাতিল)</h4><div id="inbox_done"></div>
+  </div>
+  <div id="website-section" class="section">
+   <h4 style="margin-top:0">ওয়েবসাইটের নোটিশ (প্রতি লাইনে একটি)</h4>
+   <textarea id="site_notices" rows="5" style="width:100%;padding:10px 12px;border:1px solid #c5cde0;border-radius:8px;font:inherit;background:inherit;color:inherit"></textarea>
+   <button class="btn btn-primary" id="site-save" style="margin-top:10px"><span>নোটিশ সেভ করুন</span><span class="spin"></span></button>
+   <h4>অনলাইন ভর্তির আবেদন</h4><div id="apps_out"></div>
+  </div>
+  <div id="sms-section" class="section">
+   <div class="grid">
+    <div class="form-group"><label>মেসেজের ধরন</label><select id="sms_tpl"></select></div>
+    <div class="form-group"><label>Class</label><select id="sms_class"></select></div>
+    <div class="form-group"><label>পরীক্ষার নাম (রেজাল্ট/পরীক্ষার জন্য)</label><input id="sms_exam" list="exam_names" autocomplete="off"></div>
+    <div class="form-group"><label>তারিখ</label><input type="date" id="sms_date"></div>
+    <div class="form-group"><label>সময়</label><input id="sms_time" placeholder="যেমন: বিকাল ৪টা"></div>
+    <div class="form-group"><label>অতিরিক্ত নোট</label><input id="sms_note"></div>
+   </div>
+   <div class="form-group"><label>মেসেজ (এডিট করা যাবে) — {name} {id} {class} {months} {amount} {exam} {marks} {rank} {date} {time} {note}</label>
+    <textarea id="sms_text" rows="4" style="width:100%;padding:10px 12px;border:1px solid #c5cde0;border-radius:8px;font:inherit;background:inherit;color:inherit"></textarea><small id="sms_cnt" style="color:var(--mut)"></small></div>
+   <button class="btn btn-primary" id="sms-gen"><span>প্রাপকের তালিকা তৈরি করুন</span><span class="spin"></span></button>
+   <div id="sms_out"></div>
+  </div>
+  <div id="expenses-section" class="section">
+   <div class="grid g3"><div class="form-group"><label>Date</label><input type="date" id="ex_date"></div><div class="form-group"><label>Category</label><select id="ex_cat"><option>Rent</option><option>Salary</option><option>Electricity</option><option>Stationery</option><option>Internet</option><option>Others</option></select></div><div class="form-group"><label>Note</label><input id="ex_note"></div><div class="form-group"><label>Amount</label><input type="number" id="ex_amt" min="1"></div></div>
+   <button class="btn btn-warn" id="ex-btn"><span>Add Expense</span><span class="spin"></span></button>
+   <h4>মাসিক আয়-ব্যয় (লাভ/ক্ষতি)</h4><div id="ex_sum"></div><h4>সাম্প্রতিক খরচ</h4><div id="ex_out"></div>
+  </div>
+  <div id="staff-section" class="section">
+   <h4 style="margin-top:0">নতুন Staff যোগ করুন</h4>
+   <div class="grid g3"><div class="form-group"><label>Name</label><input id="st_name"></div><div class="form-group"><label>Email</label><input type="email" id="st_email" autocapitalize="none"></div><div class="form-group"><label>Password (min 6)</label><input id="st_pw" autocomplete="new-password"></div></div>
+   <button class="btn btn-primary" id="st-add"><span>Add Staff</span><span class="spin"></span></button>
+   <h4>সব ইউজার</h4><div id="staff_out"></div>
+  </div>
+  <div id="trash-section" class="section"><div id="trash_out"></div></div>
+  <div id="account-section" class="section"><h3 style="margin-top:0">আমার প্রোফাইল</h3><p id="acc_info"></p>
+   <div class="grid"><div class="form-group"><label>Current Password</label><input type="password" id="pw_old" autocomplete="current-password"></div><div></div>
+   <div class="form-group"><label>New Password (min 6)</label><input type="password" id="pw_new" autocomplete="new-password"></div><div class="form-group"><label>Confirm New Password</label><input type="password" id="pw_new2" autocomplete="new-password"></div></div>
+   <button class="btn btn-primary" id="pw-btn"><span>Change Password</span><span class="spin"></span></button>
+  </div>
+  <div id="audit-section" class="section"><h4 style="margin-top:0">কে কখন কী পরিবর্তন করেছে</h4><div id="audit_out"></div><div id="aud_pg" class="pg"></div></div>
+
+  <div id="reports" class="section">
+   <div class="grid g3">
+    <div class="form-group"><label>Name / ID</label><input id="rep_name"></div>
+    <div class="form-group"><label>From</label><input type="date" id="rep_date"></div><div class="form-group"><label>To</label><input type="date" id="rep_to"></div>
+    <div class="form-group"><label>Month</label><select id="rep_month"></select></div>
+    <div class="form-group"><label>Year</label><select id="rep_year"></select></div>
+   </div>
+   <h4 style="margin:6px 0">গত ৬ মাসের কালেকশন</h4><div id="rep_chart"></div>
+   <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>ID</th><th>Name</th><th>Type</th><th>Month</th><th>Amount</th><th></th></tr></thead><tbody id="history_body"></tbody>
+   <tfoot><tr style="font-weight:700;background:#eef1f8"><td colspan="5" style="text-align:right">Total Collection</td><td id="total_amount">0 ৳</td><td></td></tr></tfoot></table></div>
+   <div id="rep_pg" class="pg"></div>
+   <button class="btn btn-primary btn-sm" id="btn-rep-print">🖨 Print Report</button>
+   <button class="btn btn-warn btn-sm" id="btn-rep-csv">⬇ Download CSV</button>
+  </div>
+ </div>
+</div>
+
+<dialog id="edit-dlg"><h3 style="margin-top:0">Edit Student</h3>
+ <div class="form-group"><label>Name</label><input id="e_name"></div><div class="form-group"><label>Father</label><input id="e_father"></div>
+ <div class="form-group"><label>Mother</label><input id="e_mother"></div><div class="form-group"><label>School</label><input id="e_school"></div>
+ <div class="form-group"><label>Phone</label><input id="e_phone"></div><div class="form-group"><label>Monthly Fee</label><input type="number" id="e_fee"></div><div class="form-group"><label>Class (বদলালে Class History-তে যোগ হবে)</label><select id="e_class"></select></div>
+ <div style="display:flex;gap:8px"><button class="btn btn-success" id="e_save"><span>Save</span><span class="spin"></span></button><button class="btn btn-warn" id="e_cancel">Cancel</button></div></dialog>
+<dialog id="prof-dlg"><div id="prof_body"></div><div style="display:flex;gap:8px;margin-top:14px"><select id="prof_yr" style="width:auto"><option value="">All years</option></select><button class="btn btn-info" id="prof-card">🖨 Report Card</button><button class="btn btn-warn" id="prof-close">Close</button></div></dialog>
+<div id="print-area"></div>
+<div class="toasts" id="toasts"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp, setDoc, doc, runTransaction, getDoc, updateDoc, deleteDoc, orderBy, limit, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { createUserWithEmailAndPassword, sendPasswordResetEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential, initializeAuth, browserLocalPersistence, browserSessionPersistence, inMemoryPersistence, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBdSM2HqyHdfBR5lBOL8auQv_AZBiKqFng", authDomain:"smcweb-ad35e.firebaseapp.com",
+  projectId:"smcweb-ad35e", storageBucket:"smcweb-ad35e.firebasestorage.app",
+  messagingSenderId:"124372753816", appId:"1:124372753816:web:e7824351434a16f14d1fed"});
+const db = getFirestore(app), auth = initializeAuth(app,{persistence:[browserLocalPersistence,browserSessionPersistence,inMemoryPersistence]});
+
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const NOW = new Date(), CY = NOW.getFullYear();
+const iso = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const taka = n => (Number(n)||0).toLocaleString('en-US') + ' ৳';
+function toast(msg, type=''){ const t=document.createElement('div'); t.className='toast '+type; t.textContent=msg; $('toasts').appendChild(t); setTimeout(()=>t.remove(),3500); }
+function busy(btn,on){ btn.disabled=on; btn.classList.toggle('busy',on); }
+const debounce=(f,ms=250)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>f(...a),ms)}};
+function fillSel(id,opts,first){ $(id).innerHTML=(first!==undefined?`<option value="">${first}</option>`:'')+opts.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join(''); }
+const classOpts = [...Array(12)].map((_,i)=>[String(i+1),'Class '+(i+1)]);
+const monthOpts = MONTHS.map(m=>[m,m]), yearOpts=[CY-2,CY-1,CY,CY+1].map(y=>[String(y),String(y)]);
+['s_class','res_class','print_res_class'].forEach(id=>fillSel(id,classOpts,'Select Class'));
+fillSel('info_class_val',[['all','All Class'],...classOpts],'Select Class');
+fillSel('pay_month',monthOpts); fillSel('info_month_val',monthOpts);
+fillSel('rep_month',monthOpts,'All Months');
+['pay_year','info_year_val'].forEach(id=>fillSel(id,yearOpts)); fillSel('rep_year',yearOpts,'All Years');
+$('pay_month').value=$('info_month_val').value=MONTHS[NOW.getMonth()];
+$('pay_year').value=$('info_year_val').value=String(CY);
+
+// ---------- printing ----------
+function printDoc(html){
+  $('print-area').innerHTML = html;
+  window.onafterprint = () => { $('print-area').innerHTML=''; window.onafterprint=null; };
+  setTimeout(()=>window.print(), 300);
+}
+const LOGO='<svg width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="22" fill="#14213d"/><text x="23" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#f5c542" font-family="sans-serif">SMC</text></svg>';
+const head = t => `<div style="text-align:center;border-bottom:2px solid #14213d;padding-bottom:8px;margin-bottom:16px">${LOGO}<h1 style="margin:0;color:#14213d">SOHEL MATH CARE</h1><div style="font-style:italic">Where Logic Meets Success</div><h3 style="margin:8px 0 0">${esc(t)}</h3></div>`;
+const tbl = (h,rows) => `<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr>${h.map(x=>`<th style="border:1px solid #888;padding:6px;background:#eee;text-align:left">${esc(x)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td style="border:1px solid #888;padding:6px">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+function receipt(p, title){
+  printDoc(`<div style="border:2px solid #14213d;padding:22px;border-radius:10px;font-family:'Hind Siliguri',sans-serif">${head(title)}
+  <div style="display:flex;justify-content:space-between;margin-bottom:20px;line-height:1.8"><div><b>Student:</b> ${esc(p.name)}<br><b>ID:</b> ${esc(p.studentId)}<br><b>Class:</b> ${esc(p.cls)}<br><b>Phone:</b> ${esc(p.phone||'N/A')}</div>
+  <div style="text-align:right"><b>Receipt No:</b> ${esc(p.rcpt||'-')}<br><b>Date:</b> ${esc(p.date)}<br><b>Status:</b> <span style="color:green;font-weight:700">PAID</span>${p.method?`<br><b>Method:</b> ${esc(p.method)}${p.trx?' · '+esc(p.trx):''}`:''}</div></div>
+  ${tbl(['Description','Amount'],[[p.type==='Monthly Fee'?`Monthly Fee – ${p.month} ${p.year}`:`${p.type}${p.month&&p.month!=='-'?' – '+p.month+' '+p.year:''}`, taka(p.amount)]])}
+  <div style="margin-top:60px;display:flex;justify-content:space-between;align-items:flex-end"><div>${qr(['SMC',p.rcpt,p.studentId,p.amount,p.date].join('|'))}<br><small>Computer-generated receipt. Thank you for choosing Sohel Math Care.</small></div><div style="width:200px;border-top:1px solid #000;text-align:center;padding-top:4px"><b>Authorized Signature</b></div></div></div>`);
+}
+
+// ---------- data cache ----------
+let S=[], P=[], TS=[], TP=[], selected=null;
+const pTime = p => p.dateISO || '';
+async function loadAll(){
+  const [a,b]=await Promise.all([getDocs(collection(db,'students')),getDocs(collection(db,'payments'))]);
+  const sa=a.docs.map(d=>({...d.data(),_id:d.id})), pa=b.docs.map(d=>({...d.data(),_id:d.id})).sort((x,y)=>pTime(y).localeCompare(pTime(x)));
+  S=sa.filter(x=>!x.deleted); TS=sa.filter(x=>x.deleted); P=pa.filter(x=>!x.deleted); TP=pa.filter(x=>x.deleted);
+  fillSess(); renderStats(); renderStu(); chart(); filterReports();
+}
+function renderStats(){
+  const m=MONTHS[NOW.getMonth()], td=iso(NOW);
+  const paid=new Set(S.filter(s=>monthDue(s,m,CY)<=0).map(s=>s.customId));
+  $('st_total').textContent=S.filter(cur).length;
+  $('st_today').textContent=taka(P.filter(p=>p.dateISO===td).reduce((s,p)=>s+cash(p),0));
+  $('st_month').textContent=taka(P.filter(p=>(p.dateISO||'').startsWith(td.slice(0,7))).reduce((s,p)=>s+cash(p),0));
+  $('st_month_l').textContent=m+' মাসের কালেকশন';
+  $('st_unpaid').textContent=S.filter(s=>cur(s)&&!paid.has(s.customId)).length;
+}
+
+// ---------- auth & nav ----------
+let ME=null;
+onAuthStateChanged(auth, async u=>{
+  if(!u){ ME=null; $('login-screen').style.display='flex'; $('main-app').style.display='none'; return; }
+  try{
+    ME=await getRole(u);
+    if(!ME){ toast('এই অ্যাকাউন্টের অনুমতি নেই বা নিষ্ক্রিয় করা হয়েছে','err'); signOut(auth); return; }
+    $('login-screen').style.display='none'; $('main-app').style.display='block'; applyRole();
+    await loadAll(); fetchExamNames(); if(ME.role==='admin'){ loadInbox(true); autoSync(); loadApps(true); }
+  }catch(e){ toast('ডাটা লোড হয়নি: '+e.message,'err'); }
+});
+async function doLogin(){ const b=$('login-btn'); busy(b,true);
+  try{ await Promise.race([signInWithEmailAndPassword(auth,$('login-email').value.trim().toLowerCase(),$('login-pass').value),new Promise((_,r)=>setTimeout(()=>r({code:'timeout – ইন্টারনেট/ব্রাউজার চেক করুন'}),20000))]); }
+  catch(e){ toast('লগইন ব্যর্থ ('+(e.code||e.message)+')','err'); } busy(b,false); }
+$('login-btn').onclick=doLogin; $('login-pass').onkeydown=e=>{ if(e.key==='Enter') doLogin(); };
+$('logout-btn').onclick=()=>signOut(auth);
+document.querySelectorAll('.tab-btn').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.section,.tab-btn').forEach(x=>x.classList.remove('active'));
+  $(b.dataset.sec).classList.add('active'); b.classList.add('active'); TABLOAD[b.dataset.sec]?.(); });
+
+// ---------- registration ----------
+$('reg-btn').onclick = async () => {
+  const b=$('reg-btn');
+  const s={name:$('s_name').value.trim(),father:$('s_father').value.trim(),mother:$('s_mother').value.trim(),cls:$('s_class').value,school:$('s_school').value.trim(),phone:$('s_phone').value.trim(),fee:$('s_fee').value};
+  const adm=parseFloat($('s_adm').value)||0;
+  if(!s.name||!s.cls||!s.fee) return toast('নাম, ক্লাস ও মাসিক ফি আবশ্যক','err');
+  const dup=S.find(x=>sessOf(x)===CY&&String(x.name).toLowerCase()===s.name.toLowerCase()&&(!s.phone||x.phone===s.phone));
+  if(dup&&!confirm(`${dup.name} (${dup.customId}, Class ${dup.cls}) এই বছরে আগেই নিবন্ধিত। তবুও নতুন আইডি দেবেন?`)) return;
+  busy(b,true);
+  try{
+    const re=new RegExp('^SMC-'+s.cls+'\\d{4}$'); const localMax=Math.max(0,...[...S,...TS].filter(x=>re.test(x.customId)).map(x=>parseInt(String(x.customId).slice(-4))||0));
+    const cnt=doc(db,'counters','class_'+s.cls);
+    const cid=await runTransaction(db,async tx=>{
+      const c=await tx.get(cnt), n=Math.max(c.exists()?c.data().last:0,localMax)+1;
+      const id=`SMC-${s.cls}${String(n).padStart(4,'0')}`;
+      tx.set(cnt,{last:n});
+      tx.set(doc(db,'students',id),{...s,customId:id,monthlyFee:parseFloat(s.fee),createdAt:serverTimestamp(),session:CY,status:'active',prevId:READMIT?.customId||null});
+      return id;
+    });
+    let pay=null;
+    if(adm>0){ pay=mkPay({customId:cid,name:s.name,cls:s.cls,phone:s.phone},'Admission','-',adm); await addDoc(collection(db,'payments'),pay); }
+    toast('রেজিস্ট্রেশন সফল! ID: '+cid,'ok'); log('Register',`${s.name} (${cid})`);
+    if(READMIT){ try{ await updateDoc(doc(db,'students',READMIT._id),{status:'completed',nextId:cid}); log('Re-admit',`${READMIT.customId} → ${cid}`); }catch(e){} READMIT=null; $('readmit_note').style.display='none'; }
+    if(APPL){ try{ await updateDoc(doc(db,'applications',APPL._id),{status:'enrolled',studentId:cid}); }catch(e){} APPL=null; $('readmit_note').style.display='none'; loadApps(); }
+    ['s_name','s_father','s_mother','s_school','s_phone'].forEach(i=>$(i).value=''); $('s_class').value='';
+    await loadAll();
+    receipt(pay||{studentId:cid,name:s.name,cls:s.cls,phone:s.phone,type:'Registration',month:'-',year:CY,amount:0,date:NOW.toLocaleDateString('en-GB')},'Admission & Registration');
+  }catch(e){ console.error(e); toast('Error: '+e.message,'err'); }
+  busy(b,false);
+};
+function mkPay(st,type,month,amount,year=CY,extra={}){
+  return {studentId:st.customId,name:st.name,cls:st.cls,phone:st.phone||'N/A',amount:parseFloat(amount),type,month,year:parseInt(year),
+    date:NOW.toLocaleDateString('en-GB'),dateISO:iso(NOW),rcpt:'RC-'+iso(NOW).replace(/-/g,'')+'-'+Math.random().toString(36).slice(2,6).toUpperCase(),timestamp:serverTimestamp(),...extra};
+}
+
+// ---------- payment ----------
+const box=$('suggestion_box');
+$('search_input').oninput=debounce(()=>{
+  const v=$('search_input').value.trim().toLowerCase(); box.innerHTML='';
+  if(!v){ box.hidden=true; return; }
+  const hits=S.filter(d=>sessOf(d)===SES&&(d.status||'active')!=='completed'&&[d.name,d.customId,d.phone].some(x=>String(x||'').toLowerCase().includes(v))).slice(0,8);
+  hits.forEach(d=>{ const div=document.createElement('div');
+    div.innerHTML=`<span>${esc(d.name)} <small>(Class ${esc(d.cls)})</small>${d.status==='left'?' <b style="color:var(--bad)">Left</b>':''}</span><strong>${esc(d.customId)}</strong>`;
+    div.onclick=()=>pick(d); box.appendChild(div); });
+  if(!hits.length) box.innerHTML='<div>পাওয়া যায়নি</div>';
+  box.hidden=false;
+});
+function pick(d){
+  selected=d; box.hidden=true; $('search_input').value=d.customId; $('pay_amount').value=feeOf(d);
+  const si=$('selected_info'); si.style.display='block'; si.innerHTML=`<b>${esc(d.name)}</b> · ${esc(d.customId)} · Class ${esc(d.cls)} · মাসিক ফি ${taka(feeOf(d))}${d.status==='left'?' · <b style="color:var(--bad)">Left (পেমেন্ট নিলে Active হবে)</b>':''}`;
+  const h=P.filter(p=>p.studentId===d.customId).slice(0,6);
+  $('stu_pay_hist').innerHTML=h.length?`<div class="tbl-wrap">${tbl(['Date','Type','Month','Amount'],h.map(p=>[p.date,p.type||'Monthly Fee',(p.month||'')+' '+(p.year||''),taka(p.amount)]))}</div>`:'';
+}
+$('pay-btn').onclick=async()=>{
+  const b=$('pay-btn'), m=$('pay_month').value, y=$('pay_year').value, a=$('pay_amount').value, type=$('pay_type').value;
+  if(!selected) return toast('আগে স্টুডেন্ট সিলেক্ট করুন','err');
+  if(selected.status==='left'&&ME.role!=='admin') return toast('এই স্টুডেন্ট Left। Admin-কে Active করতে বলুন','err');
+  if(!(parseFloat(a)>0)) return toast('সঠিক টাকার পরিমাণ দিন','err');
+  busy(b,true);
+  try{
+    if(type==='Monthly Fee'||type==='Waiver'){
+      const due=monthDue(selected,m,y);
+      if(due<=0){ toast(`${selected.name}-এর ${m} ${y} মাসের বেতন পরিশোধিত`,'err'); busy(b,false); return; }
+      if(parseFloat(a)>due){ toast(`${m} ${y} মাসে বকেয়া মাত্র ${taka(due)}`,'err'); busy(b,false); return; }
+    }
+    const trx=$('pay_trx').value.trim().toUpperCase(), method=$('pay_method').value;
+    if(method!=='Cash'&&!trx){ toast('TrxID দিন','err'); busy(b,false); return; }
+    if(trx&&P.some(x=>x.trx===trx)){ toast('এই TrxID আগেই ব্যবহার হয়েছে','err'); busy(b,false); return; }
+    const p=mkPay(selected,type,m,a,y,{method,trx}); await addDoc(collection(db,'payments'),p);
+    if(selected.status==='left'){ await updateDoc(doc(db,'students',selected._id),{status:'active'}); log('Reactivate',`${selected.name} (${selected.customId})`); selected.status='active'; }
+    toast('পেমেন্ট সফলভাবে সেভ হয়েছে','ok'); log('Payment',`${selected.name} (${selected.customId}) ${type} ${m} ${y} – ${a}৳`);
+    await loadAll(); pick(selected); $('pay_trx').value=''; syncOne(selected).catch(()=>{});
+    if(type!=='Waiver') receipt(p,'Fees Receipt');
+  }catch(e){ console.error(e); toast('Error: '+e.message,'err'); }
+  busy(b,false);
+};
+
+// ---------- results ----------
+document.querySelectorAll('.sub-tab').forEach(b=>b.onclick=()=>{
+  $('res-input-content').style.display=b.dataset.sub==='input'?'block':'none';
+  $('res-print-content').style.display=b.dataset.sub==='print'?'block':'none';
+  document.querySelectorAll('.sub-tab').forEach(x=>x.classList.toggle('active',x===b)); });
+async function loadList(){
+  const exam=$('res_exam_name').value.trim(), cls=$('res_class').value, c=$('res_list_container');
+  if(!exam||!cls){ c.innerHTML=''; $('save-res-btn').disabled=true; return; }
+  c.innerHTML='<p class="empty">Loading...</p>';
+  const mSnap=await getDocs(query(collection(db,'results'),where('exam','==',exam),where('cls','==',cls)));
+  const ex=prevMarks={}; legacyIds={}; mSnap.forEach(d=>{ const r=d.data(); if(ryear(r)!==$('res_year').value) return; ex[r.stuId]=r.marks; if(r.year===undefined) legacyIds[r.stuId]=d.id; });
+  const list=S.filter(s=>s.cls===cls&&String(sessOf(s))===$('res_year').value&&isAct(s)).sort((a,b)=>String(a.customId).localeCompare(b.customId));
+  c.innerHTML=list.length?`<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Marks</th></tr></thead><tbody>${list.map(s=>`<tr><td>${esc(s.customId)}</td><td>${esc(s.name)}</td><td><input type="number" min="0" class="marks-input" data-id="${esc(s.customId)}" data-name="${esc(s.name)}" value="${esc(ex[s.customId]??'')}"></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">এই ক্লাসে কোনো স্টুডেন্ট নেই</p>';
+  $('save-res-btn').disabled=!list.length;
+}
+$('res_class').onchange=loadList; $('res_exam_name').oninput=debounce(loadList,500);
+$('save-res-btn').onclick=async()=>{
+  const b=$('save-res-btn'), exam=$('res_exam_name').value.trim(), cls=$('res_class').value; busy(b,true);
+  try{
+    const ch=[...document.querySelectorAll('.marks-input')].filter(i=>i.value!==''&&String(prevMarks[i.dataset.id]??'')!==i.value).map(i=>`${i.dataset.name}: ${prevMarks[i.dataset.id]??'-'} → ${i.value}`);
+    const jobs=[...document.querySelectorAll('.marks-input')].filter(i=>i.value!=='').map(i=>
+      setDoc(doc(db,'results',legacyIds[i.dataset.id]||`${exam}_${$('res_year').value}_${cls}_${i.dataset.id}`.replace(/[\s/]+/g,'-')),{exam,cls,year:parseInt($('res_year').value),stuId:i.dataset.id,marks:parseFloat(i.value),stuName:i.dataset.name,timestamp:serverTimestamp()}));
+    await Promise.all(jobs); toast(`${jobs.length} জনের ফলাফল সেভ হয়েছে`,'ok'); log('Results',`${exam} – Class ${cls}: ${ch.join('; ')||'কোনো পরিবর্তন নেই'}`); document.querySelectorAll('.marks-input').forEach(i=>{ if(i.value!=='') prevMarks[i.dataset.id]=i.value; }); fetchExamNames();
+  }catch(e){ toast('Error: '+e.message,'err'); } busy(b,false);
+};
+async function fetchExamNames(){
+  const snap=await getDocs(collection(db,'results')); const ex=new Set(); snap.forEach(d=>ex.add(d.data().exam));
+  const names=[...ex].sort(); fillSel('print_exam_list',names.map(e=>[e,e]),'Select Exam');
+  $('exam_names').innerHTML=names.map(e=>`<option value="${esc(e)}">`).join('');
+  $('exam_chips').innerHTML=names.slice(-10).map(e=>`<button type="button" class="sub-tab" data-ex="${esc(e)}">${esc(e)}</button>`).join('');
+}
+let lastPrint=null;
+const printBtn=()=>`<button class="btn btn-warn btn-sm" id="do-print">🖨 Print</button>`;
+function showTable(title,h,rows){
+  lastPrint={title,h,rows};
+  $('result_view_area').innerHTML=`<h4>${esc(title)}</h4>`+printBtn()+`<div class="tbl-wrap">${tbl(h,rows)}</div>`;
+  $('do-print').onclick=()=>printDoc(head(title)+tbl(h,rows));
+}
+$('btn-sheet').onclick=async()=>{
+  const exam=$('print_exam_list').value, cls=$('print_res_class').value;
+  if(!exam||!cls) return toast('পরীক্ষা ও ক্লাস দুটোই সিলেক্ট করুন','err');
+  const snap=await getDocs(query(collection(db,'results'),where('exam','==',exam),where('cls','==',cls)));
+  const r=snap.docs.map(d=>d.data()).filter(x=>ryear(x)===$('print_res_year').value).sort((a,b)=>b.marks-a.marks);
+  let rank=0,prev=null; const rows=r.map((x,i)=>{ if(x.marks!==prev){rank=i+1;prev=x.marks;} return [rank,x.stuId,x.stuName,x.marks,grade(x.marks)]; });
+  rows.length?showTable(`Result Sheet – ${exam} (Class ${cls})`,['Rank','ID','Name','Marks','Grade'],rows):($('result_view_area').innerHTML='<p class="empty">কোনো ফলাফল নেই</p>');
+};
+$('btn-hist').onclick=async()=>{
+  const sid=$('single_stu_id').value.trim().toUpperCase(); if(!sid) return toast('Student ID দিন','err');
+  const snap=await getDocs(query(collection(db,'results'),where('stuId','==',sid)));
+  const rows=snap.docs.map(d=>d.data()).map(r=>[`${r.exam} (${ryear(r)}, Class ${r.cls})`,r.marks,grade(r.marks)]);
+  const nm=S.find(s=>s.customId===sid)?.name||'';
+  rows.length?showTable(`Progress – ${sid} ${nm}`,['Exam','Marks','Grade'],rows):($('result_view_area').innerHTML='<p class="empty">কোনো রেকর্ড নেই</p>');
+};
+
+// ---------- information ----------
+function toggleInfo(){ const t=$('info_type').value; $('class_field').style.display=t==='all'?'none':'block'; $('month_field').style.display=(t==='paid'||t==='unpaid')?'block':'none'; }
+$('info_type').onchange=toggleInfo;
+$('btn-info').onclick=()=>{
+  const t=$('info_type').value, c=$('info_class_val').value, m=$('info_month_val').value, y=$('info_year_val').value;
+  if(t!=='all'&&!c) return toast('ক্লাস সিলেক্ট করুন','err');
+  const inCls=s=>c==='all'||s.cls===c; let res;
+  if(t==='all') res=S.filter(cur);
+  else if(t==='class') res=S.filter(s=>cur(s)&&inCls(s));
+  else{
+    const ids=new Set(S.filter(s=>monthDue(s,m,y)<=0).map(s=>s.customId));
+    res=S.filter(s=>cur(s)&&inCls(s)&&(t==='paid'?ids.has(s.customId):!ids.has(s.customId)));
+  }
+  res=[...res].sort((a,b)=>String(a.customId).localeCompare(b.customId));
+  const title=$('info_type').selectedOptions[0].text+(t==='paid'||t==='unpaid'?` – ${m} ${y}`:'');
+  const h=['ID','Name','Phone','Class'], rows=res.map(r=>[r.customId,r.name,r.phone||'',r.cls]);
+  $('info_out').innerHTML=rows.length?`<p><span class="badge">মোট ${rows.length} জন</span></p><div class="tbl-wrap">${tbl(h,rows)}</div><button class="btn btn-info btn-sm" id="info-print">🖨 Print This List</button>`:'<p class="empty">কোনো তথ্য পাওয়া যায়নি</p>';
+  if(t==='unpaid'&&rows.length){
+    document.querySelector('#info_out thead tr').insertAdjacentHTML('beforeend','<th>Reminder</th>');
+    document.querySelectorAll('#info_out tbody tr').forEach((tr,i)=>{const r=res[i];tr.insertAdjacentHTML('beforeend',r.phone?`<td><a href="${waLink(r,m,y)}" target="_blank" rel="noopener">💬 WhatsApp</a></td>`:'<td>-</td>');});
+  }
+  if(rows.length) $('info-print').onclick=()=>printDoc(head(title)+tbl(h,rows));
+};
+
+// ---------- reports ----------
+let repRows=[],repPg=0;
+function filterReports(){
+  const n=$('rep_name').value.trim().toLowerCase(), d=$('rep_date').value, m=$('rep_month').value, y=$('rep_year').value;
+  repRows=P.filter(p=>(!d||(p.dateISO||'')>=d)&&(!$('rep_to').value||(p.dateISO||'')<=$('rep_to').value)&&(!m||p.month===m)&&(!y||String(p.year)===y)&&(!n||String(p.name||p.studentName||'').toLowerCase().includes(n)||String(p.studentId||'').toLowerCase().includes(n)));
+  const total=repRows.reduce((s,p)=>s+cash(p),0);
+  $('history_body').innerHTML=repRows.length?repRows.slice(repPg*20,repPg*20+20).map(p=>`<tr><td>${esc(p.date)}</td><td>${esc(p.studentId)}</td><td>${esc(p.name||p.studentName)}</td><td>${esc(p.type||'Monthly Fee')}</td><td>${esc(p.month)}${p.year?' '+esc(p.year):''}</td><td>${taka(p.amount)}</td><td><button class="x" data-p="${esc(p._id)}" title="Delete">✕</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">কোনো রেকর্ড নেই</td></tr>';
+  $('total_amount').textContent=taka(total); pager('rep_pg',repRows.length,repPg,20,g=>{repPg=g;filterReports();});
+}
+['rep_name','rep_date','rep_to','rep_month','rep_year'].forEach(i=>$(i).oninput=debounce(()=>{repPg=0;filterReports();},200));
+const repData=()=>repRows.map(p=>[p.date,p.studentId,p.name||p.studentName,p.type||'Monthly Fee',(p.month||'')+' '+(p.year||''),taka(p.amount)]);
+$('btn-rep-print').onclick=()=>printDoc(head('Collection Report')+tbl(['Date','ID','Name','Type','Month','Amount'],repData())+`<h3 style="text-align:right">Total: ${$('total_amount').textContent}</h3>`);
+$('btn-rep-csv').onclick=()=>{
+  const rows=[['Date','ID','Name','Type','Month','Amount'],...repRows.map(p=>[p.date,p.studentId,p.name||p.studentName,p.type||'Monthly Fee',(p.month||'')+' '+(p.year||''),p.amount])];
+  const csv='\ufeff'+rows.map(r=>r.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='report.csv'; a.click();
+};
+
+// ---------- v2 additions ----------
+const grade=m=>m>=80?'A+':m>=70?'A':m>=60?'A-':m>=50?'B':m>=40?'C':m>=33?'D':'F';
+function waLink(r,m,y){
+  let n=String(r.phone).replace(/\D/g,''); if(n.startsWith('0')) n='88'+n; else if(!n.startsWith('880')) n='880'+n;
+  return 'https://wa.me/'+n+'?text='+encodeURIComponent(`সম্মানিত অভিভাবক, ${r.name} (${r.customId}) এর ${m} ${y} মাসের বেতন বকেয়া আছে। অনুগ্রহ করে পরিশোধ করুন। – Sohel Math Care`);
+}
+function chart(){
+  const ms=[]; for(let i=5;i>=0;i--) ms.push(iso(new Date(CY,NOW.getMonth()-i,1)).slice(0,7));
+  const v=ms.map(k=>P.filter(p=>(p.dateISO||'').startsWith(k)).reduce((s,p)=>s+cash(p),0)), mx=Math.max(1,...v);
+  $('rep_chart').innerHTML=`<svg viewBox="0 0 600 165" style="width:100%;max-width:640px;color:var(--ink)">${v.map((x,i)=>{const h=x/mx*105,cx=60+i*95;
+    return `<rect x="${cx-30}" y="${130-h}" width="60" height="${Math.max(h,2)}" rx="4" fill="${i===5?'#f5c542':'#2750c7'}"/><text x="${cx}" y="${122-h}" text-anchor="middle" font-size="12" fill="currentColor">${x?Math.round(x/100)/10+'k':''}</text><text x="${cx}" y="152" text-anchor="middle" font-size="12" fill="currentColor">${MONTHS[+ms[i].slice(5)-1].slice(0,3)}</text>`}).join('')}</svg>`;
+}
+function renderStu(){
+  const q=$('stu_q').value.trim().toLowerCase();
+  let l=S.filter(s=>sessOf(s)===SES&&($('stu_status').value==='all'||(s.status||'active')===$('stu_status').value)&&(!q||[s.name,s.customId,s.phone,s.school].some(x=>String(x||'').toLowerCase().includes(q)))).sort((a,b)=>String(a.customId).localeCompare(b.customId));
+  const tot=l.length; if(stuPg*15>=tot) stuPg=0; l=l.slice(stuPg*15,stuPg*15+15); pager('stu_pg',tot,stuPg,15,g=>{stuPg=g;renderStu();});
+  $('stu_out').innerHTML=l.length?`<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Phone</th><th>Fee</th><th></th></tr></thead><tbody>${l.map(s=>`<tr><td>${esc(s.customId)}</td><td>${esc(s.name)}${s.status==='left'?' <span class="badge" style="background:#fde8e8;color:var(--bad)">Left</span>':s.status==='completed'?' <span class="badge" style="background:#eef1f8;color:var(--mut)">Completed</span>':''}</td><td>${esc(s.cls)}</td><td>${esc(s.phone)}</td><td>${taka(feeOf(s))}</td><td style="min-width:240px"><button class="btn btn-primary btn-sm" style="margin:2px" data-pr="${esc(s.customId)}">Profile</button><button class="btn btn-info btn-sm" style="margin:0 4px 0 0" data-e="${esc(s.customId)}">Edit</button><button class="btn btn-warn btn-sm" style="margin:2px" data-st="${esc(s.customId)}">${s.status==='left'?'Activate':'Left'}</button><button class="btn btn-success btn-sm" style="margin:2px" data-ra="${esc(s.customId)}">Re-admit</button><button class="btn btn-sm" style="margin:0;background:var(--bad);color:#fff" data-d="${esc(s.customId)}">Delete</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">কোনো স্টুডেন্ট পাওয়া যায়নি</p>';
+}
+let stuPg=0; $('stu_q').oninput=debounce(()=>{stuPg=0;renderStu();},200);
+let editing=null;
+$('stu_out').onclick=async e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.st){ const x=S.find(v=>v.customId===b.dataset.st), ns=x.status==='left'?'active':'left';
+    try{ await updateDoc(doc(db,'students',x._id),{status:ns}); log('Status',`${x.name} (${x.customId}) → ${ns}`); toast(ns==='left'?'Left করা হয়েছে':'Active করা হয়েছে','ok'); await loadAll(); }catch(er){ toast('Error: '+er.message,'err'); } return; }
+  if(b.dataset.ra) return startReadmit(b.dataset.ra);
+  if(b.dataset.pr) return openProfile(b.dataset.pr);
+  if(b.dataset.e){ editing=S.find(s=>s.customId===b.dataset.e);
+    ['name','father','mother','school','phone'].forEach(k=>$('e_'+k).value=editing[k]||''); $('e_fee').value=feeOf(editing); $('e_class').value=editing.cls; $('edit-dlg').showModal(); }
+  if(b.dataset.d){ const s=S.find(x=>x.customId===b.dataset.d);
+    if(!confirm(`${s.name} (${s.customId}) কে ট্র্যাশে পাঠাবেন? (Trash থেকে ফেরত আনা যাবে)`)) return;
+    try{ await updateDoc(doc(db,'students',s._id),{deleted:true,deletedAt:serverTimestamp()}); log('Delete student',`${s.name} (${s.customId})`); toast('ডিলিট হয়েছে','ok'); await loadAll(); }catch(er){ toast('Error: '+er.message,'err'); } }
+};
+$('e_cancel').onclick=()=>$('edit-dlg').close();
+$('e_save').onclick=async()=>{
+  const b=$('e_save'), name=$('e_name').value.trim(), fee=parseFloat($('e_fee').value);
+  if(!name||!(fee>=0)) return toast('নাম ও ফি সঠিক দিন','err');
+  busy(b,true);
+  try{
+    const upd={name,father:$('e_father').value.trim(),mother:$('e_mother').value.trim(),school:$('e_school').value.trim(),phone:$('e_phone').value.trim(),monthlyFee:fee,cls:$('e_class').value};
+    const lb={name:'Name',father:'Father',mother:'Mother',school:'School',phone:'Phone',monthlyFee:'Fee',cls:'Class'};
+    const old=k=>k==='monthlyFee'?(editing.monthlyFee??editing.fee):editing[k];
+    const diff=Object.keys(lb).filter(k=>String(old(k)??'')!==String(upd[k]??'')).map(k=>`${lb[k]}: ${old(k)||'-'} → ${upd[k]||'-'}`).join('; ');
+    if(!diff){ $('edit-dlg').close(); busy(b,false); return toast('কোনো পরিবর্তন নেই'); }
+    await updateDoc(doc(db,'students',editing._id),{...upd,fee:String(fee),...(upd.cls!==editing.cls?{history:[...(editing.history||[{year:CY-1,cls:editing.cls}]),{year:CY,cls:upd.cls}]}:{})});
+    $('edit-dlg').close(); log('Edit student',`${editing.customId}: ${diff}`); toast('আপডেট হয়েছে','ok'); await loadAll(); }catch(er){ toast('Error: '+er.message,'err'); }
+  busy(b,false);
+};
+$('history_body').onclick=async e=>{
+  const b=e.target.closest('button[data-p]'); if(!b) return;
+  if(!confirm('এই পেমেন্ট রেকর্ডটি ডিলিট করবেন?')) return;
+  try{ const pp=P.find(x=>x._id===b.dataset.p)||{}; await updateDoc(doc(db,'payments',b.dataset.p),{deleted:true,deletedAt:serverTimestamp()}); log('Delete payment',`${pp.name||pp.studentName} (${pp.studentId}) ${pp.month||''} – ${pp.amount}৳`); toast('পেমেন্ট ডিলিট হয়েছে','ok'); await loadAll(); }catch(er){ toast('Error: '+er.message,'err'); }
+};
+function setTheme(t){ document.documentElement.dataset.theme=t; try{localStorage.setItem('smc-theme',t)}catch(e){} }
+try{ setTheme(localStorage.getItem('smc-theme')||'light'); }catch(e){}
+$('theme-btn').onclick=()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+
+function pager(id,total,pg,size,cb){
+  const n=Math.ceil(total/size), el=$(id); if(n<=1){ el.innerHTML=''; return; }
+  el.innerHTML=`<button ${pg?'':'disabled'} data-g="${pg-1}">‹ Prev</button><span>${pg+1} / ${n}</span><button ${pg<n-1?'':'disabled'} data-g="${pg+1}">Next ›</button>`;
+  el.onclick=e=>{ const b=e.target.closest('button'); if(b&&!b.disabled) cb(+b.dataset.g); };
+}
+function qr(t){ try{ const q=qrcode(0,'M'); q.addData(t); q.make(); return q.createSvgTag({cellSize:3,margin:0}); }catch(e){ return ''; } }
+async function log(action,detail){
+  try{ await addDoc(collection(db,'audit'),{action,detail,user:auth.currentUser?.email||'',ts:Date.now(),at:serverTimestamp()}); }catch(e){ console.warn('audit',e); }
+}
+let audRows=[],audPg=0,prevMarks={};
+function fmtDetail(d){
+  return String(d??'').split('; ').map(part=>{
+    const m=part.match(/^(.*?)\s→\s(.*)$/); if(!m) return esc(part);
+    const i=m[1].lastIndexOf(': '), label=i>=0?m[1].slice(0,i+2):'', old=i>=0?m[1].slice(i+2):m[1];
+    return `${esc(label)}<span style="color:var(--bad);text-decoration:line-through">${esc(old)}</span> → <b style="color:var(--ok)">${esc(m[2])}</b>`;
+  }).join('<br>');
+}
+async function loadAudit(){
+  $('audit_out').innerHTML='<p class="empty">Loading...</p>';
+  try{ const snap=await getDocs(query(collection(db,'audit'),orderBy('ts','desc'),limit(200))); audRows=snap.docs.map(d=>d.data()); audPg=0; renderAudit(); }
+  catch(e){ $('audit_out').innerHTML='<p class="empty">লোড হয়নি: '+esc(e.message)+'</p>'; }
+}
+function renderAudit(){
+  const r=audRows.slice(audPg*20,audPg*20+20);
+  $('audit_out').innerHTML=audRows.length?`<div class="tbl-wrap"><table><thead><tr><th>Time</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody>${r.map(a=>`<tr><td>${esc(new Date(a.ts).toLocaleString('en-GB'))}</td><td>${esc(a.user)}</td><td>${esc(a.action)}</td><td>${fmtDetail(a.detail)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">এখনো কোনো লগ নেই</p>';
+  pager('aud_pg',audRows.length,audPg,20,g=>{audPg=g;renderAudit();});
+}
+const ICON={'website-section':'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/>','portal-section':'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>','sms-section':'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>','dues-section':'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>','expenses-section':'<path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>','staff-section':'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>','trash-section':'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>','account-section':'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>','add-student':'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>','payment':'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>','result-section':'<path d="M3 3v18h18"/><path d="M8 17v-5M13 17V8M18 17v-9"/>','info-section':'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>','students-section':'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>','reports':'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/>','audit-section':'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'};
+document.querySelectorAll('.tab-btn').forEach(b=>{ const l=b.textContent.replace(/^\S+\s/,''); b.innerHTML=`<svg viewBox="0 0 24 24">${ICON[b.dataset.sec]}</svg><span>${esc(l)}</span>`; });
+
+// ---------- v4: roles, dues, trash, expenses, profile, PWA ----------
+const cash=p=>p.type==='Waiver'?0:(+p.amount||0);
+const feeOf=s=>+(s.monthlyFee??s.fee)||0;
+function monthDue(s,m,y){
+  const f=P.filter(p=>p.studentId===s.customId&&p.month===m&&String(p.year??CY)===String(y));
+  const sum=t=>f.filter(p=>p.type===t).reduce((a,p)=>a+(+p.amount||0),0);
+  return feeOf(s)-sum('Monthly Fee')-sum('Waiver');
+}
+function dueList(s){
+  let d=s.createdAt?.toDate?.()||new Date(CY,0,1); d=new Date(d.getFullYear(),d.getMonth(),1);
+  const lim=new Date(CY,NOW.getMonth()-11,1), end=new Date(CY,NOW.getMonth(),1), out=[]; if(d<lim) d=lim;
+  while(d<=end){ const m=MONTHS[d.getMonth()], y=d.getFullYear(), due=monthDue(s,m,y); if(due>0&&(d.getTime()===end.getTime()||due<feeOf(s))) out.push({m,y,due}); d=new Date(y,d.getMonth()+1,1); }
+  return out;
+}
+async function getRole(u){
+  const r=doc(db,'users',u.uid), d=await getDoc(r);
+  if(d.exists()) return d.data().active===false?null:{...d.data(),uid:u.uid};
+  const a=await getDocs(query(collection(db,'users'),where('role','==','admin'),limit(1)));
+  if(!a.empty) return null;
+  const me={email:u.email,name:u.email.split('@')[0],role:'admin',active:true}; await setDoc(r,me); return {...me,uid:u.uid};
+}
+function applyRole(){
+  const adm=ME.role==='admin', ok=['add-student','payment','result-section','account-section'];
+  document.querySelectorAll('.tab-btn').forEach(b=>b.style.display=(adm||ok.includes(b.dataset.sec))?'':'none');
+  document.querySelector('.stats').style.display=adm?'':'none';
+  $('nav_user').textContent=ME.name+' · '+ME.role;
+  if(adm&&!document.querySelector('#pay_type option[value=Waiver]')) $('pay_type').insertAdjacentHTML('beforeend','<option value="Waiver">Waiver</option>');
+  document.querySelector('.tab-btn[data-sec="add-student"]').click();
+}
+const TABLOAD={'audit-section':loadAudit,'staff-section':loadStaff,'expenses-section':loadExp,'dues-section':renderDues,'trash-section':renderTrash,'account-section':()=>{ $('acc_info').innerHTML=`${esc(ME.name)} · ${esc(ME.email)} · <span class="badge">${esc(ME.role)}</span>`; }};
+fillSel('due_class',classOpts,'All Classes');
+['pay_month','pay_year','pay_type'].forEach(i=>$(i).onchange=()=>{ if(selected&&$('pay_type').value==='Monthly Fee'){ const d=monthDue(selected,$('pay_month').value,$('pay_year').value); $('pay_amount').value=d>0?d:''; } });
+
+// password
+$('pw-btn').onclick=async()=>{
+  const b=$('pw-btn'), n=$('pw_new').value;
+  if(n.length<6) return toast('নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষর','err'); if(n!==$('pw_new2').value) return toast('পাসওয়ার্ড মিলছে না','err');
+  busy(b,true);
+  try{ await reauthenticateWithCredential(auth.currentUser,EmailAuthProvider.credential(auth.currentUser.email,$('pw_old').value)); await updatePassword(auth.currentUser,n);
+    toast('পাসওয়ার্ড বদলেছে','ok'); log('Password change',ME.email); ['pw_old','pw_new','pw_new2'].forEach(i=>$(i).value=''); }
+  catch(e){ toast('ব্যর্থ ('+(e.code||e.message)+')','err'); } busy(b,false);
+};
+// staff
+let STAFF=[], auth2=null;
+const secAuth=()=>auth2||(auth2=initializeAuth(initializeApp(app.options,'sec'),{persistence:[inMemoryPersistence]}));
+$('st-add').onclick=async()=>{
+  const b=$('st-add'), name=$('st_name').value.trim(), email=$('st_email').value.trim().toLowerCase(), pw=$('st_pw').value;
+  if(!name||!email||pw.length<6) return toast('নাম, ইমেইল ও কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন','err');
+  busy(b,true);
+  try{ const c=await createUserWithEmailAndPassword(secAuth(),email,pw); await signOut(secAuth());
+    await setDoc(doc(db,'users',c.user.uid),{email,name,role:'staff',active:true,createdAt:serverTimestamp()});
+    log('Add staff',`${name} (${email})`); toast('Staff যোগ হয়েছে','ok'); ['st_name','st_email','st_pw'].forEach(i=>$(i).value=''); loadStaff(); }
+  catch(e){ toast('ব্যর্থ ('+(e.code||e.message)+')','err'); } busy(b,false);
+};
+async function loadStaff(){
+  const sn=await getDocs(collection(db,'users')); STAFF=sn.docs.map(d=>({...d.data(),_id:d.id}));
+  $('staff_out').innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>${STAFF.map(u=>`<tr><td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.role)}</td><td>${u.active===false?'<span style="color:var(--bad)">Inactive</span>':'<span class="badge">Active</span>'}</td><td style="white-space:nowrap">${u.role==='admin'?'':`<button class="btn btn-info btn-sm" style="margin:0 4px 0 0" data-t="${u._id}|toggle">${u.active===false?'Activate':'Deactivate'}</button><button class="btn btn-warn btn-sm" style="margin:0 4px 0 0" data-t="${u._id}|reset">Reset Pass</button><button class="btn btn-sm" style="margin:0;background:var(--bad);color:#fff" data-t="${u._id}|del">Remove</button>`}</td></tr>`).join('')}</tbody></table></div>`;
+}
+$('staff_out').onclick=async e=>{
+  const b=e.target.closest('button[data-t]'); if(!b) return; const [id,act]=b.dataset.t.split('|'), u=STAFF.find(x=>x._id===id);
+  try{
+    if(act==='toggle'){ await updateDoc(doc(db,'users',id),{active:u.active===false}); log('Staff '+(u.active===false?'activate':'deactivate'),u.email); }
+    if(act==='reset'){ await sendPasswordResetEmail(auth,u.email); toast('রিসেট ইমেইল পাঠানো হয়েছে','ok'); log('Staff reset email',u.email); }
+    if(act==='del'){ if(!confirm(u.name+' কে সরাবেন? সে আর লগইন করতে পারবে না।')) return; await deleteDoc(doc(db,'users',id)); log('Remove staff',u.email); }
+    loadStaff();
+  }catch(er){ toast('ব্যর্থ ('+(er.code||er.message)+')','err'); }
+};
+// trash
+function renderTrash(){
+  const rows=[...TS.map(s=>['students',s._id,'Student',`${s.name} (${s.customId})`]),...TP.map(p=>['payments',p._id,'Payment',`${p.name||p.studentName} ${p.studentId} ${p.month||''} – ${taka(p.amount)}`])];
+  $('trash_out').innerHTML=rows.length?`<div class="tbl-wrap"><table><thead><tr><th>Type</th><th>Details</th><th></th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r[2]}</td><td>${esc(r[3])}</td><td style="white-space:nowrap"><button class="btn btn-success btn-sm" style="margin:0 4px 0 0" data-rs="${r[0]}|${esc(r[1])}">Restore</button><button class="btn btn-sm" style="margin:0;background:var(--bad);color:#fff" data-pd="${r[0]}|${esc(r[1])}">Delete forever</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">ট্র্যাশ খালি</p>';
+}
+$('trash_out').onclick=async e=>{
+  const b=e.target.closest('button'); if(!b) return; const [c,id]=(b.dataset.rs||b.dataset.pd).split('|');
+  try{ if(b.dataset.rs){ await updateDoc(doc(db,c,id),{deleted:false}); log('Restore',c+' '+id); }
+    else{ if(!confirm('চিরতরে মুছে যাবে। নিশ্চিত?')) return; await deleteDoc(doc(db,c,id)); log('Delete forever',c+' '+id); }
+    await loadAll(); renderTrash(); }catch(er){ toast('Error: '+er.message,'err'); }
+};
+// dues
+let dueRows=[];
+function renderDues(){
+  const c=$('due_class').value, q=$('due_q').value.trim().toLowerCase();
+  dueRows=S.filter(s=>cur(s)&&(!c||s.cls===c)&&(!q||[s.name,s.customId].some(x=>String(x||'').toLowerCase().includes(q)))).map(s=>({s,l:dueList(s)})).filter(x=>x.l.length).map(x=>({...x,t:x.l.reduce((a,d)=>a+d.due,0)})).sort((a,b)=>b.t-a.t);
+  $('due_sum').innerHTML=`মোট বকেয়া: <b style="color:var(--bad)">${taka(dueRows.reduce((a,x)=>a+x.t,0))}</b> · ${dueRows.length} জন`;
+  const mt=l=>l.map(d=>d.m.slice(0,3)+(d.y!==CY?' '+d.y:'')).join(', ');
+  $('due_out').innerHTML=dueRows.length?`<div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Months</th><th>Due</th><th></th></tr></thead><tbody>${dueRows.map(x=>`<tr><td>${esc(x.s.customId)}</td><td>${esc(x.s.name)}</td><td>${esc(x.s.cls)}</td><td>${esc(mt(x.l))}</td><td><b>${taka(x.t)}</b></td><td style="white-space:nowrap"><button class="btn btn-success btn-sm" style="margin:0 4px 0 0" data-c="${esc(x.s.customId)}">Collect</button>${x.s.phone?`<a href="${waLink(x.s,mt(x.l),'')}" target="_blank" rel="noopener">💬</a> <a href="${dueSms(x)}">✉</a>`:''}</td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">কোনো বকেয়া নেই 🎉</p>';
+}
+$('due_class').onchange=renderDues; $('due_q').oninput=debounce(renderDues,200);
+$('due_out').onclick=e=>{
+  const b=e.target.closest('button[data-c]'); if(!b) return; const x=dueRows.find(r=>r.s.customId===b.dataset.c), f=x.l[0];
+  pick(x.s); $('pay_type').value='Monthly Fee'; $('pay_month').value=f.m; $('pay_year').value=String(f.y); $('pay_amount').value=f.due;
+  document.querySelector('.tab-btn[data-sec="payment"]').click();
+};
+$('due-print').onclick=()=>dueRows.length&&printDoc(head('Dues Report')+tbl(['ID','Name','Class','Months','Due'],dueRows.map(x=>[x.s.customId,x.s.name,x.s.cls,x.l.map(d=>d.m.slice(0,3)+' '+d.y).join(', '),taka(x.t)]))+`<h3 style="text-align:right">Total: ${taka(dueRows.reduce((a,x)=>a+x.t,0))}</h3>`);
+// expenses
+let X=[]; $('ex_date').value=iso(NOW);
+async function loadExp(){ const sn=await getDocs(collection(db,'expenses')); X=sn.docs.map(d=>({...d.data(),_id:d.id})).sort((a,b)=>(b.dateISO||'').localeCompare(a.dateISO||'')); renderExp(); }
+function renderExp(){
+  const rows=[]; for(let i=0;i<6;i++){ const k=iso(new Date(CY,NOW.getMonth()-i,1)).slice(0,7);
+    rows.push([k,P.filter(p=>(p.dateISO||'').startsWith(k)).reduce((a,p)=>a+cash(p),0),X.filter(x=>(x.dateISO||'').startsWith(k)).reduce((a,x)=>a+(+x.amount||0),0)]); }
+  $('ex_sum').innerHTML=`<div class="tbl-wrap"><table><thead><tr><th>Month</th><th>আয়</th><th>ব্যয়</th><th>লাভ / ক্ষতি</th></tr></thead><tbody>${rows.map(([k,i,e])=>`<tr><td>${MONTHS[+k.slice(5)-1]} ${k.slice(0,4)}</td><td>${taka(i)}</td><td>${taka(e)}</td><td style="font-weight:700;color:${i>=e?'var(--ok)':'var(--bad)'}">${i>=e?'+':'−'}${taka(Math.abs(i-e))}</td></tr>`).join('')}</tbody></table></div>`;
+  $('ex_out').innerHTML=X.length?`<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Category</th><th>Note</th><th>Amount</th><th></th></tr></thead><tbody>${X.slice(0,30).map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.category)}</td><td>${esc(x.note)}</td><td>${taka(x.amount)}</td><td><button class="x" data-x="${esc(x._id)}">✕</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">কোনো খরচ নেই</p>';
+}
+$('ex-btn').onclick=async()=>{
+  const b=$('ex-btn'), amt=parseFloat($('ex_amt').value), d=$('ex_date').value; if(!(amt>0)||!d) return toast('তারিখ ও টাকা দিন','err'); busy(b,true);
+  try{ const x={dateISO:d,date:d.split('-').reverse().join('/'),category:$('ex_cat').value,note:$('ex_note').value.trim(),amount:amt,by:ME.email};
+    await addDoc(collection(db,'expenses'),x); log('Expense',`${x.category} ${amt}৳ ${x.note}`); $('ex_amt').value=''; $('ex_note').value=''; toast('খরচ যোগ হয়েছে','ok'); loadExp(); }
+  catch(e){ toast('Error: '+e.message,'err'); } busy(b,false);
+};
+$('ex_out').onclick=async e=>{ const b=e.target.closest('button[data-x]'); if(!b||!confirm('খরচটি মুছবেন?')) return;
+  try{ const x=X.find(v=>v._id===b.dataset.x); await deleteDoc(doc(db,'expenses',b.dataset.x)); log('Delete expense',`${x.category} ${x.amount}৳`); loadExp(); }catch(er){ toast('Error: '+er.message,'err'); } };
+// profile & report card
+let PROF=null;
+function resChart(r){
+  const w=Math.max(r.length*70,280), mx=Math.max(100,...r.map(x=>x.marks));
+  return `<div class="tbl-wrap"><svg viewBox="0 0 ${w} 140" style="width:100%;min-width:${w}px;max-width:640px;color:inherit">${r.map((x,i)=>{ const h=x.marks/mx*90, cx=35+i*70;
+    return `<rect x="${cx-20}" y="${105-h}" width="40" height="${Math.max(h,1)}" rx="3" fill="${x.marks>=33?'#2750c7':'#c93a3a'}"/><text x="${cx}" y="${99-h}" text-anchor="middle" font-size="11" fill="currentColor">${x.marks}</text><text x="${cx}" y="123" text-anchor="middle" font-size="10" fill="currentColor">${esc(x.lbl||String(x.exam).slice(0,10))}</text>`; }).join('')}</svg></div>`;
+}
+async function openProfile(id){
+  const s=S.find(x=>x.customId===id); $('prof_body').innerHTML='<p class="empty">Loading...</p>'; $('prof-dlg').showModal();
+  try{
+    const own=(await getDocs(query(collection(db,'results'),where('stuId','==',id)))).docs.map(d=>d.data());
+    const all=(await Promise.all([...new Set(own.map(r=>r.cls))].map(c=>getDocs(query(collection(db,'results'),where('cls','==',c)))))).flatMap(sn=>sn.docs.map(d=>d.data()));
+    const res=own.sort((a,b)=>ryear(a).localeCompare(ryear(b))).map(r=>{ const pe=all.filter(x=>x.exam===r.exam&&x.cls===r.cls&&ryear(x)===ryear(r)).map(x=>x.marks); return {exam:`${r.exam} ${ryear(r)} (Class ${r.cls})`,lbl:`${String(r.exam).slice(0,7)} '${ryear(r).slice(2)}`,y:ryear(r),marks:r.marks,grade:grade(r.marks),rank:1+pe.filter(m=>m>r.marks).length,n:pe.length}; });
+    const pays=P.filter(p=>p.stuId===id||p.studentId===id), dues=dueList(s), tot=dues.reduce((a,d)=>a+d.due,0);
+    const avg=res.length?res.reduce((a,r)=>a+r.marks,0)/res.length:null; PROF={s,res,avg}; $('prof_yr').innerHTML='<option value="">All years</option>'+[...new Set(res.map(r=>r.y))].map(y=>`<option>${y}</option>`).join('');
+    $('prof_body').innerHTML=`<h3 style="margin-top:0">${esc(s.name)} <span class="badge">${esc(s.customId)}</span></h3>
+    <div class="grid" style="gap:2px 18px"><div>Class: <b>${esc(s.cls)}</b></div><div>School: <b>${esc(s.school||'-')}</b></div><div>Father: <b>${esc(s.father||'-')}</b></div><div>Mother: <b>${esc(s.mother||'-')}</b></div><div>Phone: <b>${esc(s.phone||'-')}</b></div><div>মাসিক ফি: <b>${taka(feeOf(s))}</b></div><div style="grid-column:1/-1">Session: <b>${sessOf(s)}</b> · Status: <b>${esc(s.status||'active')}</b>${s.prevId?` · আগের রেকর্ড: <a href="#" data-op="${esc(s.prevId)}">${esc(s.prevId)}</a>`:''}${s.nextId?` · পরের রেকর্ড: <a href="#" data-op="${esc(s.nextId)}">${esc(s.nextId)}</a>`:''}</div></div>
+    <p>বকেয়া: <b style="color:${tot?'var(--bad)':'var(--ok)'}">${tot?taka(tot)+' ('+dues.map(d=>d.m.slice(0,3)).join(', ')+')':'নেই'}</b></p>
+    <h4>Results ${avg!==null?`(গড়: ${avg.toFixed(1)} · ${grade(avg)})`:''}</h4>${res.length?`<div class="tbl-wrap">${tbl(['Exam','Marks','Grade','Rank'],res.map(r=>[r.exam,r.marks,r.grade,`${r.rank}/${r.n}`]))}</div>`+resChart(res):'<p class="empty">কোনো ফলাফল নেই</p>'}
+    <h4>Payments</h4>${pays.length?`<div class="tbl-wrap">${tbl(['Date','Type','Month','Amount'],pays.map(p=>[p.date,p.type||'Monthly Fee',(p.month||'')+' '+(p.year||''),taka(p.amount)]))}</div>`:'<p class="empty">কোনো পেমেন্ট নেই</p>'}`;
+  }catch(e){ $('prof_body').innerHTML='<p class="empty">লোড হয়নি: '+esc(e.message)+'</p>'; }
+}
+$('prof-close').onclick=()=>$('prof-dlg').close();
+$('prof-card').onclick=()=>{
+  if(!PROF) return; const {s}=PROF, yy=$('prof_yr').value, res=yy?PROF.res.filter(r=>r.y===yy):PROF.res, avg=res.length?res.reduce((a,r)=>a+r.marks,0)/res.length:null;
+  printDoc(`<div style="border:2px solid #14213d;padding:22px;border-radius:10px">${head('Progress Report Card'+(yy?' – '+yy:''))}
+  <div style="display:flex;justify-content:space-between;line-height:1.8;margin-bottom:14px"><div><b>Name:</b> ${esc(s.name)}<br><b>ID:</b> ${esc(s.customId)}<br><b>Class:</b> ${esc(s.cls)}</div><div style="text-align:right"><b>School:</b> ${esc(s.school||'-')}<br><b>Father:</b> ${esc(s.father||'-')}<br><b>Date:</b> ${NOW.toLocaleDateString('en-GB')}</div></div>
+  ${res.length?tbl(['Exam','Marks','Grade','Rank'],res.map(r=>[r.exam,r.marks,r.grade,`${r.rank} / ${r.n}`]))+resChart(res)+`<p><b>Average:</b> ${avg.toFixed(1)} &nbsp; <b>Overall Grade:</b> ${grade(avg)}</p>`:'<p>No results yet.</p>'}
+  <div style="margin-top:50px;display:flex;justify-content:space-between"><div style="width:180px;border-top:1px solid #000;text-align:center">Guardian</div><div style="width:180px;border-top:1px solid #000;text-align:center">Teacher</div></div></div>`);
+};
+// PWA (needs https hosting to be installable)
+try{
+  const mk=n=>{ const c=document.createElement('canvas'); c.width=c.height=n; const x=c.getContext('2d'); x.fillStyle='#14213d'; x.fillRect(0,0,n,n); x.fillStyle='#f5c542'; x.font=`700 ${n*.3}px sans-serif`; x.textAlign='center'; x.textBaseline='middle'; x.fillText('SMC',n/2,n/2); return c.toDataURL('image/png'); };
+  const man={name:'Sohel Math Care',short_name:'SMC',start_url:location.href.split('#')[0],display:'standalone',background_color:'#14213d',theme_color:'#14213d',icons:[{src:mk(192),sizes:'192x192',type:'image/png'},{src:mk(512),sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+  document.head.insertAdjacentHTML('beforeend',`<link rel="manifest" href="${URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'}))}"><link rel="apple-touch-icon" href="${mk(180)}">`);
+}catch(e){}
+
+// ---------- v5: year-aware results, promotion ----------
+let legacyIds={};
+const ryear=r=>String(r.year??(r.timestamp?.toDate?.().getFullYear()??CY));
+fillSel('res_year',yearOpts); fillSel('print_res_year',yearOpts); $('res_year').value=$('print_res_year').value=String(CY); $('res_year').onchange=loadList;
+fillSel('e_class',classOpts);
+
+// ---------- v6: sessions, Left/Active, Re-admit ----------
+let SES=CY, READMIT=null;
+const sessOf=s=>+(s.session??(s.createdAt?.toDate?.().getFullYear()??CY));
+const isAct=s=>(s.status||'active')==='active';
+const cur=s=>sessOf(s)===SES&&isAct(s);
+function fillSess(){ const ys=new Set(S.map(sessOf)); ys.add(CY); $('sess_sel').innerHTML=[...ys].sort((a,b)=>b-a).map(y=>`<option>${y}</option>`).join(''); $('sess_sel').value=String(SES); }
+$('sess_sel').onchange=()=>{ SES=+$('sess_sel').value; stuPg=0; renderStats(); renderStu(); const a=document.querySelector('.section.active'); TABLOAD[a.id]?.(); };
+$('stu_status').onchange=()=>{ stuPg=0; renderStu(); };
+$('exam_chips').onclick=e=>{ const b=e.target.closest('button[data-ex]'); if(b){ $('res_exam_name').value=b.dataset.ex; loadList(); } };
+$('prof_body').onclick=e=>{ const a=e.target.closest('a[data-op]'); if(a){ e.preventDefault(); openProfile(a.dataset.op); } };
+function startReadmit(id){
+  const o=S.find(x=>x.customId===id); READMIT=o;
+  ['name','father','mother','school','phone'].forEach(k=>$('s_'+k).value=o[k]||''); $('s_fee').value=feeOf(o); $('s_class').value='';
+  const n=$('readmit_note'); n.style.display='block';
+  n.innerHTML=`<b>Re-admit:</b> ${esc(o.name)} (আগের আইডি ${esc(o.customId)}, ${sessOf(o)}, Class ${esc(o.cls)}) — নতুন ক্লাস বেছে Save করুন <button class="x" id="ra-cancel">বাতিল</button>`;
+  document.querySelector('.tab-btn[data-sec="add-student"]').click();
+}
+$('readmit_note').onclick=e=>{ if(e.target.id==='ra-cancel'){ APPL=null; READMIT=null; $('readmit_note').style.display='none'; ['s_name','s_father','s_mother','s_school','s_phone'].forEach(i=>$(i).value=''); } };
+
+// ---------- v7: SMS from phone ----------
+const TPL={
+ due:{l:'বেতন বকেয়া',t:'সম্মানিত অভিভাবক, {name} ({id}) এর {months} মাসের বেতন {amount} টাকা বকেয়া আছে। অনুগ্রহ করে পরিশোধ করুন। – Sohel Math Care'},
+ result:{l:'রেজাল্ট প্রকাশ',t:'{name} এর {exam} পরীক্ষার নম্বর {marks}, মেধাক্রম {rank}। – Sohel Math Care'},
+ off:{l:'ক্লাস বন্ধ',t:'প্রিয় অভিভাবক, {date} তারিখে {name} এর ক্লাস বন্ধ থাকবে। {note} – Sohel Math Care'},
+ time:{l:'ক্লাসের সময় পরিবর্তন',t:'প্রিয় অভিভাবক, {name} এর ক্লাসের সময় {date} থেকে পরিবর্তন করে {time} করা হয়েছে। {note} – Sohel Math Care'},
+ exam:{l:'পরীক্ষার তারিখ',t:'প্রিয় অভিভাবক, {name} এর {exam} পরীক্ষা {date} তারিখে, সময় {time}। – Sohel Math Care'}};
+let SMSQ=[], SMSNO=0;
+const bdNum=p=>{ const n=String(p||'').replace(/\D/g,''); return n.startsWith('880')?n:n.startsWith('0')?'88'+n:'880'+n; };
+const smsUri=(ph,t)=>'sms:+'+bdNum(ph)+(/iPhone|iPad/.test(navigator.userAgent)?'&':'?')+'body='+encodeURIComponent(t);
+const fillTpl=(t,d)=>t.replace(/\{(\w+)\}/g,(m,k)=>d[k]??'').replace(/\s+/g,' ').trim();
+const dueSms=x=>smsUri(x.s.phone,fillTpl(TPL.due.t,{name:x.s.name,id:x.s.customId,months:x.l.map(d=>d.m.slice(0,3)).join(', '),amount:x.t}));
+fillSel('sms_tpl',Object.entries(TPL).map(([k,v])=>[k,v.l])); fillSel('sms_class',classOpts,'সব ক্লাস');
+const smsMsg=q=>fillTpl($('sms_text').value,{name:q.s.name,id:q.s.customId,class:q.s.cls,exam:$('sms_exam').value.trim(),date:($('sms_date').value||'').split('-').reverse().join('/'),time:$('sms_time').value.trim(),note:$('sms_note').value.trim(),...q.v});
+function smsCount(){
+  const t=SMSQ.length?smsMsg(SMSQ[0]):$('sms_text').value, n=t.length, u=/[^\x00-\x7F]/.test(t);
+  $('sms_cnt').textContent=`${n} অক্ষর ≈ ${u?(n<=70?1:Math.ceil(n/67)):(n<=160?1:Math.ceil(n/153))} SMS পার্ট (বাংলা হলে ৭০ অক্ষরে ১ পার্ট)`;
+}
+$('sms_tpl').onchange=()=>{ $('sms_text').value=TPL[$('sms_tpl').value].t; SMSQ=[]; $('sms_out').innerHTML=''; smsCount(); };
+$('sms_text').oninput=()=>{ smsCount(); if(SMSQ.length) renderSms(); };
+['sms_exam','sms_date','sms_time','sms_note'].forEach(i=>$(i).oninput=()=>{ if(SMSQ.length){ renderSms(); smsCount(); } });
+$('sms_tpl').onchange();
+$('sms-gen').onclick=async()=>{
+  const b=$('sms-gen'), t=$('sms_tpl').value, c=$('sms_class').value; busy(b,true);
+  try{
+    const all=S.filter(s=>cur(s)&&(!c||s.cls===c)), base=all.filter(s=>s.phone); SMSNO=all.length-base.length; let list;
+    if(t==='due') list=base.map(s=>{ const l=dueList(s); return l.length?{s,v:{months:l.map(d=>d.m.slice(0,3)).join(', '),amount:l.reduce((a,d)=>a+d.due,0)}}:null; }).filter(Boolean);
+    else if(t==='result'){
+      const ex=$('sms_exam').value.trim(); if(!ex){ toast('পরীক্ষার নাম দিন','err'); busy(b,false); return; }
+      const rs=(await getDocs(query(collection(db,'results'),where('exam','==',ex)))).docs.map(d=>d.data()).filter(r=>ryear(r)===String(SES));
+      list=base.map(s=>{ const r=rs.find(x=>x.stuId===s.customId); if(!r) return null; const pe=rs.filter(x=>x.cls===r.cls).map(x=>x.marks); return {s,v:{marks:r.marks,rank:(1+pe.filter(m=>m>r.marks).length)+'/'+pe.length}}; }).filter(Boolean);
+    } else list=base.map(s=>({s,v:{}}));
+    SMSQ=list.map(x=>({...x,sent:false,on:true})); renderSms(); smsCount();
+  }catch(e){ toast('Error: '+e.message,'err'); } busy(b,false);
+};
+function renderSms(){
+  if(!SMSQ.length){ $('sms_out').innerHTML='<p class="empty">কোনো প্রাপক নেই (ডাটা বা ফোন নম্বর নেই)</p>'; return; }
+  const n=SMSQ.filter(q=>q.on).length, sent=SMSQ.filter(q=>q.sent).length, left=SMSQ.filter(q=>q.on&&!q.sent).length;
+  $('sms_out').innerHTML=`<p>প্রাপক: <b>${n}</b> · পাঠানো: <b style="color:var(--ok)">${sent}</b>${SMSNO?` · ফোন নম্বর নেই: ${SMSNO} জন`:''}</p>
+  <button class="btn btn-success" id="sms-next" ${left?'':'disabled'}>▶ পরের জনকে পাঠান (${left} বাকি)</button>
+  <button class="btn btn-warn btn-sm" data-act="nums">📋 নম্বর কপি</button><button class="btn btn-info btn-sm" data-act="csv">⬇ CSV</button>
+  <div class="tbl-wrap"><table><thead><tr><th></th><th>স্টুডেন্ট</th><th>মেসেজ</th><th></th></tr></thead><tbody>${SMSQ.map((q,i)=>`<tr style="${q.sent?'opacity:.55':''}"><td><input type="checkbox" data-k="${i}" ${q.on?'checked':''} style="width:auto"></td><td>${esc(q.s.name)}<br><small>${esc(q.s.customId)} · ${esc(q.s.phone)}</small></td><td><small>${esc(smsMsg(q))}</small></td><td style="white-space:nowrap"><button class="btn btn-primary btn-sm" style="margin:2px" data-s="${i}">${q.sent?'✓ আবার':'✉ SMS'}</button><a href="https://wa.me/${bdNum(q.s.phone)}?text=${encodeURIComponent(smsMsg(q))}" target="_blank" rel="noopener">💬</a></td></tr>`).join('')}</tbody></table></div>`;
+}
+function smsSend(i){ const q=SMSQ[i]; q.sent=true; const h=smsUri(q.s.phone,smsMsg(q)); renderSms(); location.href=h; }
+$('sms_out').onclick=e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.id==='sms-next'){ const i=SMSQ.findIndex(q=>q.on&&!q.sent); if(i>=0) smsSend(i); }
+  else if(b.dataset.s!==undefined) smsSend(+b.dataset.s);
+  else if(b.dataset.act==='nums') navigator.clipboard?.writeText(SMSQ.filter(q=>q.on).map(q=>'+'+bdNum(q.s.phone)).join(',')).then(()=>toast('নম্বরগুলো কপি হয়েছে','ok'),()=>toast('কপি করা যায়নি','err'));
+  else if(b.dataset.act==='csv'){
+    const rows=[['Name','Phone','Message'],...SMSQ.filter(q=>q.on).map(q=>[q.s.name,bdNum(q.s.phone),smsMsg(q)])];
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['\ufeff'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n')],{type:'text/csv'})); a.download='sms-list.csv'; a.click();
+  }
+};
+$('sms_out').onchange=e=>{ const c=e.target.closest('input[data-k]'); if(c){ SMSQ[+c.dataset.k].on=c.checked; renderSms(); } };
+
+// ---------- v8: parent portal (admin side) ----------
+const locPhone=p=>{ let d=String(p||'').replace(/\D/g,''); if(d.startsWith('880')) d=d.slice(2); if(d.length===10&&d[0]==='1') d='0'+d; return d; };
+const pkey=x=>x.customId+'_'+locPhone(x.phone);
+let RSC=null, INBOX=[];
+function portalBuild(x,rs){
+  const dues=dueList(x), o={id:x.customId,name:x.name,cls:x.cls,session:sessOf(x),fee:feeOf(x),dues,totalDue:dues.reduce((a,d)=>a+d.due,0),
+    payments:P.filter(p=>p.studentId===x.customId&&p.type!=='Waiver').slice(0,12).map(p=>({date:p.date,type:p.type||'Monthly Fee',month:p.month||'',year:p.year||'',amount:+p.amount||0,rcpt:p.rcpt||'',method:p.method||'',trx:p.trx||''})),updated:Date.now()};
+  if(rs) o.results=rs.filter(r=>r.stuId===x.customId).map(r=>{ const pe=rs.filter(v=>v.exam===r.exam&&v.cls===r.cls&&ryear(v)===ryear(r)).map(v=>v.marks); return {exam:r.exam,year:ryear(r),cls:r.cls,marks:r.marks,grade:grade(r.marks),rank:1+pe.filter(m=>m>r.marks).length,n:pe.length}; });
+  return o;
+}
+async function syncPortal(){
+  const list=S.filter(x=>sessOf(x)===CY&&isAct(x)&&locPhone(x.phone).length===11);
+  RSC=(await getDocs(collection(db,'results'))).docs.map(d=>d.data());
+  for(let i=0;i<list.length;i+=300){ const b=writeBatch(db); list.slice(i,i+300).forEach(x=>b.set(doc(db,'portal',pkey(x)),portalBuild(x,RSC),{merge:true})); await b.commit(); }
+  try{ localStorage.setItem('smc-psync',String(Date.now())); }catch(e){}
+  return list.length;
+}
+async function syncOne(x){ if(locPhone(x.phone).length!==11) return; await setDoc(doc(db,'portal',pkey(x)),portalBuild(x,RSC),{merge:true}); }
+async function autoSync(){ try{ if(Date.now()-(+localStorage.getItem('smc-psync')||0)>864e5){ const n=await syncPortal(); toast(`Portal তথ্য হালনাগাদ হয়েছে (${n} জন)`,'ok'); } }catch(e){ console.warn('portal sync',e); } }
+async function loadInbox(quiet){
+  try{ INBOX=(await getDocs(query(collection(db,'inbox'),orderBy('ts','desc'),limit(100)))).docs.map(d=>({...d.data(),_id:d.id})); renderInbox();
+    const n=INBOX.filter(x=>x.status==='pending').length; if(quiet&&n) toast(`${n} টি পেমেন্ট অনুমোদনের অপেক্ষায় (Portal ট্যাব)`); }
+  catch(e){ if(!quiet) toast('Inbox লোড হয়নি: '+e.message,'err'); }
+}
+TABLOAD['portal-section']=()=>loadInbox();
+function renderInbox(){
+  const pen=INBOX.filter(x=>x.status==='pending'), done=INBOX.filter(x=>x.status!=='pending').slice(0,30);
+  $('inbox_pending').innerHTML=pen.length?`<div class="tbl-wrap"><table><thead><tr><th>স্টুডেন্ট</th><th>মাস</th><th>টাকা</th><th>মেথড / TrxID</th><th></th></tr></thead><tbody>${pen.map(x=>`<tr><td>${esc(x.name)}<br><small>${esc(x.id)} · Class ${esc(x.cls)}</small></td><td>${esc(x.month)} ${esc(x.year)}</td><td><b>${taka(x.amount)}</b></td><td>${esc(x.method)}<br><b>${esc(x.trx)}</b></td><td style="white-space:nowrap"><button class="btn btn-success btn-sm" style="margin:2px" data-ap="${esc(x._id)}">✓ Approve</button><button class="btn btn-sm" style="margin:2px;background:var(--bad);color:#fff" data-rj="${esc(x._id)}">Reject</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">কোনো অপেক্ষমান অনুরোধ নেই</p>';
+  $('inbox_done').innerHTML=done.length?`<div class="tbl-wrap">${tbl(['Student','Month','Amount','Method / TrxID','Status'],done.map(x=>[`${x.name} (${x.id})`,`${x.month} ${x.year}`,taka(x.amount),`${x.method} ${x.trx}`,x.status==='approved'?'Paid':'Rejected']))}</div>`:'';
+}
+async function approveReq(x){
+  await loadAll();
+  const st=S.find(v=>v.customId===x.id);
+  if(!st) return toast('স্টুডেন্ট পাওয়া যায়নি','err');
+  if(!MONTHS.includes(x.month)||!(+x.amount>0)) return toast('অনুরোধের তথ্য ঠিক নেই','err');
+  if(x.trx&&P.some(p=>p.trx===x.trx)) return toast('এই TrxID দিয়ে আগেই পেমেন্ট নেওয়া হয়েছে','err');
+  const due=monthDue(st,x.month,x.year);
+  if(due<=0) return toast(`${x.month} ${x.year} মাস আগেই পরিশোধিত`,'err');
+  if(x.amount>due&&!confirm(`বকেয়া ${taka(due)}, কিন্তু ${taka(x.amount)} দেওয়া হয়েছে। তবুও অনুমোদন করবেন?`)) return;
+  const p=mkPay(st,'Monthly Fee',x.month,x.amount,x.year,{method:x.method,trx:x.trx,via:'portal'});
+  await addDoc(collection(db,'payments'),p);
+  const u={status:'approved',rcpt:p.rcpt,payDate:p.date,approvedAt:Date.now()};
+  await updateDoc(doc(db,'inbox',x._id),u); await updateDoc(doc(db,'portal',x.key,'requests',x._id),u);
+  log('Portal approve',`${st.name} (${st.customId}) ${x.month} ${x.year} – ${x.amount}৳ ${x.method} ${x.trx}`); toast('অনুমোদিত হয়েছে, পেমেন্ট যোগ হয়েছে','ok');
+  await loadAll(); syncOne(st).catch(()=>{});
+}
+$('portal-section').onclick=async e=>{
+  const b=e.target.closest('button[data-ap],button[data-rj]'); if(!b) return; const id=b.dataset.ap||b.dataset.rj, x=INBOX.find(v=>v._id===id); if(!x) return; busy(b,true);
+  try{
+    if(b.dataset.ap) await approveReq(x);
+    else{ const r=prompt('বাতিলের কারণ (অভিভাবক দেখতে পাবেন):','TrxID মেলেনি'); if(r===null){ busy(b,false); return; }
+      const u={status:'rejected',reason:r.slice(0,100)}; await updateDoc(doc(db,'inbox',id),u); await updateDoc(doc(db,'portal',x.key,'requests',id),u); log('Portal reject',`${x.name} (${x.id}) ${x.trx}`); toast('বাতিল করা হয়েছে'); }
+    await loadInbox();
+  }catch(er){ toast('Error: '+er.message,'err'); }
+  busy(b,false);
+};
+$('portal-sync').onclick=async()=>{ const b=$('portal-sync'); busy(b,true);
+  try{ const n=await syncPortal(); toast(`${n} জনের Portal তথ্য হালনাগাদ হয়েছে`,'ok'); $('portal_last').textContent=' সর্বশেষ: '+new Date().toLocaleString('en-GB'); }catch(e){ toast('Sync ব্যর্থ: '+e.message,'err'); } busy(b,false); };
+try{ $('portal_url').value=localStorage.getItem('smc-purl')||''; }catch(e){}
+$('portal_url').oninput=()=>{ try{ localStorage.setItem('smc-purl',$('portal_url').value.trim()); }catch(e){} };
+$('portal-copy').onclick=()=>navigator.clipboard?.writeText(`অভিভাবক পোর্টাল: ${$('portal_url').value.trim()}\nস্টুডেন্ট আইডি ও রেজিস্টার্ড ফোন নম্বর দিয়ে ঢুকে বকেয়া ও রেজাল্ট দেখুন এবং বেতন জমা দিন। – Sohel Math Care`).then(()=>toast('মেসেজ কপি হয়েছে','ok'),()=>toast('কপি করা যায়নি','err'));
+
+// ---------- v9: website applications & notices ----------
+let APPL=null, APPS=[];
+async function loadSite(){ try{ const d=await getDoc(doc(db,'site','main')); $('site_notices').value=d.exists()?(d.data().notices||[]).join('\n'):''; }catch(e){} }
+$('site-save').onclick=async()=>{ const b=$('site-save'); busy(b,true);
+  try{ await setDoc(doc(db,'site','main'),{notices:$('site_notices').value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,8),updated:Date.now()},{merge:true}); toast('নোটিশ সেভ হয়েছে','ok'); log('Website notice','updated'); }
+  catch(e){ toast('Error: '+e.message,'err'); } busy(b,false); };
+async function loadApps(quiet){
+  try{ APPS=(await getDocs(query(collection(db,'applications'),orderBy('ts','desc'),limit(100)))).docs.map(d=>({...d.data(),_id:d.id})); renderApps();
+    const n=APPS.filter(a=>a.status==='pending').length; if(quiet&&n) toast(`${n} টি নতুন ভর্তির আবেদন (Website ট্যাব)`); }
+  catch(e){ if(!quiet) toast('আবেদন লোড হয়নি: '+e.message,'err'); }
+}
+TABLOAD['website-section']=()=>{ loadSite(); loadApps(); };
+function renderApps(){
+  const pen=APPS.filter(a=>a.status==='pending'), old=APPS.filter(a=>a.status!=='pending').slice(0,20);
+  $('apps_out').innerHTML=(pen.length?`<div class="tbl-wrap"><table><thead><tr><th>আবেদনকারী</th><th>Class</th><th>যোগাযোগ</th><th></th></tr></thead><tbody>${pen.map(a=>`<tr><td><b>${esc(a.name)}</b><br><small>পিতা: ${esc(a.father||'-')} · মাতা: ${esc(a.mother||'-')}<br>স্কুল: ${esc(a.school||'-')}${a.note?'<br>নোট: '+esc(a.note):''}<br>${esc(new Date(a.ts).toLocaleString('en-GB'))}</small></td><td>${esc(a.cls)}</td><td>${esc(a.phone)}<br><a href="https://wa.me/${bdNum(a.phone)}" target="_blank" rel="noopener">💬</a> <a href="tel:${esc(a.phone)}">📞</a></td><td style="white-space:nowrap"><button class="btn btn-success btn-sm" style="margin:2px" data-en="${esc(a._id)}">ভর্তি করুন</button><button class="btn btn-sm" style="margin:2px;background:var(--bad);color:#fff" data-xa="${esc(a._id)}">বাদ</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="empty">কোনো নতুন আবেদন নেই</p>')
+   +(old.length?`<h4>সাম্প্রতিক</h4><div class="tbl-wrap">${tbl(['নাম','Class','ফোন','অবস্থা'],old.map(a=>[a.name,a.cls,a.phone,a.status==='enrolled'?'ভর্তি ('+(a.studentId||'')+')':'বাদ']))}</div>`:'');
+}
+$('apps_out').onclick=async e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.en){ const a=APPS.find(x=>x._id===b.dataset.en); APPL=a; READMIT=null;
+    $('s_name').value=a.name||''; $('s_father').value=a.father||''; $('s_mother').value=a.mother||''; $('s_school').value=a.school||''; $('s_phone').value=a.phone||''; $('s_class').value=a.cls||'';
+    const n=$('readmit_note'); n.style.display='block'; n.innerHTML=`<b>অনলাইন আবেদন:</b> ${esc(a.name)} (Class ${esc(a.cls)}) — মাসিক ফি দিয়ে Save করুন <button class="x" id="ra-cancel">বাতিল</button>`;
+    document.querySelector('.tab-btn[data-sec="add-student"]').click(); }
+  if(b.dataset.xa){ if(!confirm('এই আবেদন বাদ দেবেন?')) return; const a=APPS.find(x=>x._id===b.dataset.xa);
+    try{ await updateDoc(doc(db,'applications',a._id),{status:'rejected'}); log('Application reject',`${a.name} (${a.phone})`); loadApps(); }catch(er){ toast('Error: '+er.message,'err'); } }
+};
+</script>
+</body>
+</html>
